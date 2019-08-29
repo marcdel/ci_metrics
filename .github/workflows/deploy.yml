@@ -1,4 +1,4 @@
-name: Build/Test/Deploy
+name: Deploy
 
 on:
   push:
@@ -6,32 +6,33 @@ on:
     - master
 
 jobs:
-  build:
+
+  Deploy:
     runs-on: ubuntu-latest
 
-    services:
-      db:
-        image: postgres:11
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
-      - uses: actions/checkout@v1.0.0
-      - uses: actions/setup-elixir@v1.0.0
+      - uses: actions/checkout@master
+      - name: Login to Heroku
+        uses: actions/heroku@master
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         with:
-          otp-version: 22.x
-          elixir-version: 1.9.x
-      - name: Install Dependencies
-        run: mix deps.get
-      - name: Run Tests
-        run: mix test
-      - name: Check Code Quality
-        run: mix credo
-      - name: Check Formatting
-        run: mix format --check-formatted
-      - name: Deploy to Heroku
-        uses: actions/heroku@1.0.0
+          args: container:login
+      - name: Push to Heroku
+        uses: actions/heroku@master
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        with:
+          args: container:push -a amadeus-cho web --arg SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }},DATABASE_URL=${{ secrets.DATABASE_URL }}
+      - name: Create Heroku Release
+        uses: actions/heroku@master
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        with:
+          args: container:release -a amadeus-cho web
