@@ -20,7 +20,9 @@ defmodule AmadeusChoWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", AmadeusChoWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", AmadeusChoWeb do
+    pipe_through :api
+
+    resources "/events", EventController, only: [:create]
+  end
 end
