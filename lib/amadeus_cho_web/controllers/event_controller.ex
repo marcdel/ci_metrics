@@ -9,4 +9,14 @@ defmodule AmadeusChoWeb.EventController do
 
     json(conn, %{success: true, event_id: event_id, event_name: event_type})
   end
+
+  def index(conn, _params) do
+    events = AmadeusCho.Event.get_all()
+    render(conn, "index.html", events: events)
+  end
+
+  def show(conn, params) do
+    event = AmadeusCho.Event.get_by(id: params["id"])
+    render(conn, "show.html", event: event)
+  end
 end

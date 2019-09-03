@@ -1,0 +1,20 @@
+<h1>Event <%= @event.event_id %></h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Event Id</th>
+      <th>Event Type</th>
+      <th>Time</th>
+      <th>Raw Event</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><%= @event.event_id %></td>
+      <td><%= @event.event_type %></td>
+      <td><%= @event.inserted_at %></td>
+      <td><%= inspect(@event.raw) %></td>
+    </tr>
+  </tbody>
+</table>

@@ -16,8 +16,12 @@ defmodule AmadeusCho.Event do
     |> Repo.insert()
   end
 
-  def find_all do
+  def get_all do
     Repo.all(Event)
+  end
+
+  def get_by(params) do
+    Repo.get_by(Event, params)
   end
 
   @doc false

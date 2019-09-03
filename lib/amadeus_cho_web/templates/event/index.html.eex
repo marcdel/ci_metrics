@@ -1,0 +1,22 @@
+<h1>Events</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Event Id</th>
+      <th>Event Type</th>
+      <th>Time</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  <%= for event <- @events do %>
+    <tr>
+      <td><%= event.event_id %></td>
+      <td><%= event.event_type %></td>
+      <td><%= event.inserted_at %></td>
+      <td> <%= link "Show", to: Routes.event_path(@conn, :show, event) %> </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

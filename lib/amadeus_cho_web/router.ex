@@ -18,6 +18,7 @@ defmodule AmadeusChoWeb.Router do
 
     get "/", PageController, :index
     resources "/webhooks", WebhookController, only: [:new, :create]
+    resources "/events", EventController, only: [:index, :show]
   end
 
   scope "/api", AmadeusChoWeb do
