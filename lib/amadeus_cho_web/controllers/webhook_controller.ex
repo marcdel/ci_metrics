@@ -19,9 +19,24 @@ defmodule AmadeusChoWeb.WebhookController do
         |> put_flash(:info, "Webhook created.")
         |> render("new.html")
 
-      {:error, _} ->
+      {:error, error} ->
+        error_message =
+          case error do
+            :webhook_exists ->
+              "Oops! This repository already has a webhook from us."
+
+            :repository_not_found ->
+              "Oops! We couldn't find that repository."
+
+            :invalid_credentials ->
+              "Oops! The access token you provided doesn't seem to be working."
+
+            :webhook_error ->
+              "Oops! We had some trouble creating your webhook."
+          end
+
         conn
-        |> put_flash(:error, "Error creating webhook.")
+        |> put_flash(:error, error_message)
         |> render("new.html")
     end
   end

@@ -15,17 +15,20 @@ defmodule AmadeusChoWeb.WebhookControllerTest do
   end
 
   test "POST /webhooks", %{conn: conn} do
-    expected_url = "https://api.github.com/repos/marcdel/amadeus_cho/hooks?access_token=1234509876"
+    expected_url =
+      "https://api.github.com/repos/marcdel/amadeus_cho/hooks?access_token=1234509876"
 
     expect(MockHTTPClient, :post, fn ^expected_url, _, _, [] ->
       {:ok, %Mojito.Response{status_code: 201}}
     end)
 
     conn =
-      post(conn, Routes.webhook_path(conn, :create), %{"webhook" => %{
-        "repository_name" => "marcdel/amadeus_cho",
-        "access_token" => "1234509876"
-      }})
+      post(conn, Routes.webhook_path(conn, :create), %{
+        "webhook" => %{
+          "repository_name" => "marcdel/amadeus_cho",
+          "access_token" => "1234509876"
+        }
+      })
 
     assert get_flash(conn, :info) == "Webhook created."
   end
@@ -36,11 +39,13 @@ defmodule AmadeusChoWeb.WebhookControllerTest do
     end)
 
     conn =
-      post(conn, Routes.webhook_path(conn, :create), %{"webhook" => %{
-        "repository_name" => "marcdel/amadeus_cho",
-        "access_token" => "1234509876"
-      }})
+      post(conn, Routes.webhook_path(conn, :create), %{
+        "webhook" => %{
+          "repository_name" => "marcdel/amadeus_cho",
+          "access_token" => "1234509876"
+        }
+      })
 
-    assert get_flash(conn, :error) == "Error creating webhook."
+    assert get_flash(conn, :error) == "Oops! We had some trouble creating your webhook."
   end
 end
