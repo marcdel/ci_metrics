@@ -1,1 +1,6 @@
-<h1>Coming soon!</h1>
+<section class="phx-hero">
+  <h1>CI Metrics</h1>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ex purus, sagittis vitae feugiat non, molestie sed erat. Donec egestas quis turpis a malesuada. Proin felis nisl, suscipit in dolor ac, varius dignissim est. Mauris quis congue metus, eget laoreet nunc. Praesent sed lectus in turpis dapibus egestas et quis sem. Sed auctor dolor ac posuere posuere. Fusce rutrum metus vel aliquet commodo.</p>
+  <br/>
+  <a href="/webhooks/new" class="button button-primary">Get Started</a>
+</section>

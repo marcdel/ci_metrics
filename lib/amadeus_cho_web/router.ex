@@ -17,9 +17,9 @@ defmodule AmadeusChoWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    resources "/webhooks", WebhookController, only: [:new, :create]
   end
 
-  # Other scopes may use custom stacks.
   scope "/api", AmadeusChoWeb do
     pipe_through :api
 

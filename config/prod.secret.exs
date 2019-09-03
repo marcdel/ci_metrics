@@ -27,6 +27,15 @@ config :amadeus_cho, AmadeusChoWeb.Endpoint,
   http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
   secret_key_base: secret_key_base
 
+webhook_callback_url =
+  System.get_env("WEBHOOK_CALLBACK_URL") ||
+    raise """
+    Environment variable WEBHOOK_CALLBACK_URL is missing.
+    For example: http://aaf59627.ngrok.io/api/events
+    """
+
+config :amadeus_cho, webhook_callback_url: webhook_callback_url
+
 # ## Using releases (Elixir v1.9+)
 #
 # If you are doing OTP releases, you need to instruct Phoenix

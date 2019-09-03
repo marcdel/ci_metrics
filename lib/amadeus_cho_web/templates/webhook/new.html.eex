@@ -1,0 +1,15 @@
+<h1>Let's get you set up</h1>
+
+<%= form_for @conn, Routes.webhook_path(@conn, :create), [as: :webhook], fn f -> %>
+  <fieldset>
+    <label>
+      Repository <%= text_input f, :repository_name, placeholder: "owner/repo" %>
+    </label>
+
+    <label>
+      Personal access token <%= password_input f, :access_token %>
+    </label>
+
+    <%= submit "Create" %>
+  </fieldset>
+<% end %>

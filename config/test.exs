@@ -14,5 +14,10 @@ config :amadeus_cho, AmadeusChoWeb.Endpoint,
   http: [port: 4002],
   server: false
 
+config :amadeus_cho, webhook_callback_url: "localhost:4000/api/events"
+
+# Mocks
+config :amadeus_cho, :http_client, MockHTTPClient
+
 # Print only warnings and errors during test
 config :logger, level: :warn

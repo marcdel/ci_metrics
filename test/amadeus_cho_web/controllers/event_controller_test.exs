@@ -1,5 +1,5 @@
 defmodule AmadeusChoWeb.EventControllerTest do
-  use AmadeusChoWeb.ConnCase
+  use AmadeusChoWeb.ConnCase, async: true
   alias AmadeusCho.Event
 
   test "POST /api/events", %{conn: conn} do
