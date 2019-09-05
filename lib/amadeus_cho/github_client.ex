@@ -1,12 +1,6 @@
 defmodule AmadeusCho.GithubClient do
   require Logger
 
-  @http_client Application.get_env(
-                 :amadeus_cho,
-                 :http_client,
-                 AmadeusCho.HTTPClient
-               )
-
   @callback create_webhook(map()) :: {:ok, nil} | {:error, any()}
   def create_webhook(webhook) do
     url =
@@ -26,57 +20,32 @@ defmodule AmadeusCho.GithubClient do
         }
       })
 
-    with {:ok, response} <-
-           @http_client.post(url, [{"content-type", "application/json"}], body, []),
-         {:ok, _} <- validate_response(response) do
-      {:ok, :webhook_created}
-    else
-      {:error, :webhook_exists, response} ->
-        Logger.error(
-          "Error creating webhook for #{webhook.repository_name}: #{inspect(response.body)}"
-        )
+    http_client = Application.get_env(:amadeus_cho, :http_client, AmadeusCho.HTTPClient)
 
-        {:error, :webhook_exists}
+    {_, response} = http_client.post(url, [{"content-type", "application/json"}], body, [])
 
-      {:error, :repository_not_found, response} ->
-        Logger.error(
-          "Error creating webhook for #{webhook.repository_name} (repository not found): #{
-            inspect(response.body)
-          }"
-        )
-
-        {:error, :repository_not_found}
-
-      {:error, :invalid_credentials, response} ->
-        Logger.error(
-          "Error creating webhook for #{webhook.repository_name} (invalid credentials): #{
-            inspect(response.body)
-          }"
-        )
-
-        {:error, :invalid_credentials}
-
-      {:error, response} ->
-        Logger.error(
-          "Error creating webhook for #{webhook.repository_name}: #{inspect(response)}"
-        )
-
-        {:error, :webhook_error}
-    end
+    validate_response(webhook.repository_name, response)
   end
 
-  defp validate_response(%{status_code: 422} = response) do
-    {:error, :webhook_exists, response}
+  defp validate_response(_, %{status_code: 201}), do: {:ok, :webhook_created}
+
+  defp validate_response(name, %{status_code: 422, body: body}) do
+    Logger.error("Error creating webhook for #{name}: #{inspect(body)}")
+    {:error, :webhook_exists}
   end
 
-  defp validate_response(%{status_code: 404} = response) do
-    {:error, :repository_not_found, response}
+  defp validate_response(name, %{status_code: 404, body: body}) do
+    Logger.error("Error creating webhook for #{name} (repository not found): #{inspect(body)}")
+    {:error, :repository_not_found}
   end
 
-  defp validate_response(%{status_code: 401} = response) do
-    {:error, :invalid_credentials, response}
+  defp validate_response(name, %{status_code: 401, body: body}) do
+    Logger.error("Error creating webhook for #{name} (invalid credentials): #{inspect(body)}")
+    {:error, :invalid_credentials}
   end
 
-  defp validate_response(%{status_code: 201}), do: {:ok, nil}
-  defp validate_response(response), do: {:error, response}
+  defp validate_response(name, response) do
+    Logger.error("Error creating webhook for #{name}: #{inspect(response)}")
+    {:error, :webhook_error}
+  end
 end

@@ -5,6 +5,7 @@
     <tr>
       <th>Event Id</th>
       <th>Event Type</th>
+      <th>Repository</th>
       <th>Time</th>
       <th></th>
     </tr>
@@ -14,6 +15,7 @@
     <tr>
       <td><%= event.event_id %></td>
       <td><%= event.event_type %></td>
+      <td><%= repository_full_name(event.repository) %></td>
       <td><%= event.inserted_at %></td>
       <td> <%= link "Show", to: Routes.event_path(@conn, :show, event) %> </td>
     </tr>

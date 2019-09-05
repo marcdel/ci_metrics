@@ -1,6 +1,6 @@
 defmodule AmadeusChoWeb.EventControllerTest do
   use AmadeusChoWeb.ConnCase, async: true
-  alias AmadeusCho.Event
+  alias AmadeusCho.{Event, Organizations}
 
   test "POST /api/events", %{conn: conn} do
     json_payload =
@@ -26,10 +26,10 @@ defmodule AmadeusChoWeb.EventControllerTest do
 
   test "GET /events", %{conn: conn} do
     {:ok, _} =
-      Event.create_event(%{
+      Organizations.create_event(%{
         event_id: "05b648a1-86cd-4777-bd5c-2e12302d75d3",
         event_type: "push",
-        raw: %{"commits" => []}
+        raw_event: %{"repository" => %{"full_name" => "marcdel/amadeus_cho_test"}}
       })
 
     [event] = Event.get_all()
@@ -39,13 +39,17 @@ defmodule AmadeusChoWeb.EventControllerTest do
     conn = get(conn, "/events")
 
     assert response(conn, 200) =~ "05b648a1-86cd-4777-bd5c-2e12302d75d3"
+    assert response(conn, 200) =~ "marcdel/amadeus_cho_test"
   end
 
   test "GET /events/:id", %{conn: conn} do
-    Event.create_event(%{
+    Organizations.create_event(%{
       event_id: "05b648a1-86cd-4777-bd5c-2e12302d75d3",
       event_type: "push",
-      raw: %{"commits" => [%{"id" => "cbc47eabe663e87be4bd8d385abd99c54b53ac00"}]}
+      raw_event: %{
+        "repository" => %{"full_name" => "marcdel/amadeus_cho_test"},
+        "commits" => [%{"id" => "cbc47eabe663e87be4bd8d385abd99c54b53ac00"}]
+      }
     })
 
     [event] = Event.get_all()
@@ -53,5 +57,6 @@ defmodule AmadeusChoWeb.EventControllerTest do
     conn = get(conn, "/events/#{event.id}")
 
     assert response(conn, 200) =~ "cbc47eabe663e87be4bd8d385abd99c54b53ac00"
+    assert response(conn, 200) =~ "marcdel/amadeus_cho_test"
   end
 end
