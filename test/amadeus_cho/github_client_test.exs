@@ -24,7 +24,7 @@ defmodule AmadeusCho.GithubClientTest do
     end)
 
     result =
-      GithubClient.create_webhook(%AmadeusCho.Webhook{
+      GithubClient.create_webhook(%{
         repository_name: "marcdel/amadeus_cho",
         access_token: "1234509876",
         callback_url: "localhost:4000/api/events",
@@ -45,7 +45,7 @@ defmodule AmadeusCho.GithubClientTest do
        }}
     end)
 
-    result = GithubClient.create_webhook(%AmadeusCho.Webhook{})
+    result = GithubClient.create_webhook(generic_webhook_request())
 
     assert result == {:error, :webhook_error}
   end
@@ -62,7 +62,7 @@ defmodule AmadeusCho.GithubClientTest do
        }}
     end)
 
-    result = GithubClient.create_webhook(%AmadeusCho.Webhook{})
+    result = GithubClient.create_webhook(generic_webhook_request())
 
     assert result == {:error, :webhook_exists}
   end
@@ -79,7 +79,7 @@ defmodule AmadeusCho.GithubClientTest do
        }}
     end)
 
-    result = GithubClient.create_webhook(%AmadeusCho.Webhook{})
+    result = GithubClient.create_webhook(generic_webhook_request())
 
     assert result == {:error, :repository_not_found}
   end
@@ -96,8 +96,17 @@ defmodule AmadeusCho.GithubClientTest do
        }}
     end)
 
-    result = GithubClient.create_webhook(%AmadeusCho.Webhook{})
+    result = GithubClient.create_webhook(generic_webhook_request())
 
     assert result == {:error, :invalid_credentials}
+  end
+
+  defp generic_webhook_request do
+    %{
+      repository_name: "",
+      access_token: "",
+      events: [],
+      callback_url: ""
+    }
   end
 end

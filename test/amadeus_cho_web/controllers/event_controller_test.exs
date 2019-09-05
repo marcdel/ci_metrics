@@ -1,6 +1,6 @@
 defmodule AmadeusChoWeb.EventControllerTest do
   use AmadeusChoWeb.ConnCase, async: true
-  alias AmadeusCho.{Event, Organizations, Repository}
+  alias AmadeusCho.{Event, Project, Repository}
 
   test "POST /api/events", %{conn: conn} do
     json_payload =
@@ -26,7 +26,7 @@ defmodule AmadeusChoWeb.EventControllerTest do
 
   test "GET /events", %{conn: conn} do
     {:ok, _} =
-      Organizations.create_event(%{
+      Project.create_event(%{
         event_id: "05b648a1-86cd-4777-bd5c-2e12302d75d3",
         event_type: "push",
         raw_event: %{"repository" => %{"full_name" => "marcdel/amadeus_cho_test"}}
@@ -44,21 +44,21 @@ defmodule AmadeusChoWeb.EventControllerTest do
 
   test "GET /events?repository_id=:id", %{conn: conn} do
     {:ok, _} =
-      Organizations.create_event(%{
+      Project.create_event(%{
         event_id: "event1",
         event_type: "push",
         raw_event: %{"repository" => %{"full_name" => "marcdel/repo1"}}
       })
 
     {:ok, _} =
-      Organizations.create_event(%{
+      Project.create_event(%{
         event_id: "event2",
         event_type: "push",
         raw_event: %{"repository" => %{"full_name" => "marcdel/repo2"}}
       })
 
     {:ok, _} =
-      Organizations.create_event(%{
+      Project.create_event(%{
         event_id: "event3",
         event_type: "push",
         raw_event: %{"repository" => %{"full_name" => "marcdel/repo1"}}
@@ -74,7 +74,7 @@ defmodule AmadeusChoWeb.EventControllerTest do
   end
 
   test "GET /events/:id", %{conn: conn} do
-    Organizations.create_event(%{
+    Project.create_event(%{
       event_id: "05b648a1-86cd-4777-bd5c-2e12302d75d3",
       event_type: "push",
       raw_event: %{

@@ -13,12 +13,6 @@ defmodule AmadeusCho.Event do
     timestamps()
   end
 
-  def create_event(attrs \\ %{}) do
-    %Event{}
-    |> raw_event_changeset(attrs)
-    |> Repo.insert()
-  end
-
   def get_all do
     Event
     |> order_by(desc: :repository_id, desc: :id)
@@ -28,13 +22,6 @@ defmodule AmadeusCho.Event do
 
   def get_by(params) do
     Repo.get_by(Event, params) |> Repo.preload(:repository)
-  end
-
-  def get_for_repository(repository_id) do
-    Event
-    |> where(repository_id: ^repository_id)
-    |> Repo.all()
-    |> Repo.preload(:repository)
   end
 
   @doc false

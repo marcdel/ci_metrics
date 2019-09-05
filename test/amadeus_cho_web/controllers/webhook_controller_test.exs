@@ -24,10 +24,8 @@ defmodule AmadeusChoWeb.WebhookControllerTest do
 
     conn =
       post(conn, Routes.webhook_path(conn, :create), %{
-        "webhook" => %{
-          "repository_name" => "marcdel/amadeus_cho",
-          "access_token" => "1234509876"
-        }
+        "repository_name" => "marcdel/amadeus_cho",
+        "access_token" => "1234509876"
       })
 
     assert get_flash(conn, :info) == "Webhook created."
@@ -40,10 +38,8 @@ defmodule AmadeusChoWeb.WebhookControllerTest do
 
     conn =
       post(conn, Routes.webhook_path(conn, :create), %{
-        "webhook" => %{
-          "repository_name" => "marcdel/amadeus_cho",
-          "access_token" => "1234509876"
-        }
+        "repository_name" => "marcdel/amadeus_cho",
+        "access_token" => "1234509876"
       })
 
     assert get_flash(conn, :error) == "Oops! We had some trouble creating your webhook."
