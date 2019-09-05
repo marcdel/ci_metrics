@@ -1,6 +1,6 @@
 defmodule AmadeusChoWeb.EventControllerTest do
   use AmadeusChoWeb.ConnCase, async: true
-  alias AmadeusCho.{Event, Organizations}
+  alias AmadeusCho.{Event, Organizations, Repository}
 
   test "POST /api/events", %{conn: conn} do
     json_payload =
@@ -40,6 +40,37 @@ defmodule AmadeusChoWeb.EventControllerTest do
 
     assert response(conn, 200) =~ "05b648a1-86cd-4777-bd5c-2e12302d75d3"
     assert response(conn, 200) =~ "marcdel/amadeus_cho_test"
+  end
+
+  test "GET /events?repository_id=:id", %{conn: conn} do
+    {:ok, _} =
+      Organizations.create_event(%{
+        event_id: "event1",
+        event_type: "push",
+        raw_event: %{"repository" => %{"full_name" => "marcdel/repo1"}}
+      })
+
+    {:ok, _} =
+      Organizations.create_event(%{
+        event_id: "event2",
+        event_type: "push",
+        raw_event: %{"repository" => %{"full_name" => "marcdel/repo2"}}
+      })
+
+    {:ok, _} =
+      Organizations.create_event(%{
+        event_id: "event3",
+        event_type: "push",
+        raw_event: %{"repository" => %{"full_name" => "marcdel/repo1"}}
+      })
+
+    repository = Repository.get_by(%{owner: "marcdel", name: "repo1"})
+
+    conn = get(conn, "/events?repository_id=#{repository.id}")
+
+    assert response(conn, 200) =~ "event1"
+    refute response(conn, 200) =~ "event2"
+    assert response(conn, 200) =~ "event3"
   end
 
   test "GET /events/:id", %{conn: conn} do

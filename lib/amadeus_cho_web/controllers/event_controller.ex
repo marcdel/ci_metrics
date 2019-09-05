@@ -14,7 +14,18 @@ defmodule AmadeusChoWeb.EventController do
     json(conn, %{success: true, event_id: event_id, event_name: event_type})
   end
 
-  def index(conn, _params) do
+  def index(conn, %{"repository_id" => repository_id}) do
+    events =
+      repository_id
+      |> Integer.parse()
+      |> Tuple.to_list()
+      |> List.first()
+      |> AmadeusCho.Event.get_for_repository()
+
+    render(conn, "index.html", events: events)
+  end
+
+  def index(conn, _) do
     events = AmadeusCho.Event.get_all()
     render(conn, "index.html", events: events)
   end

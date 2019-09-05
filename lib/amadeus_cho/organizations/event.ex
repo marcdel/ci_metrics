@@ -1,7 +1,7 @@
 defmodule AmadeusCho.Event do
   use Ecto.Schema
   import Ecto.Changeset
-  import Ecto.Query, only: [order_by: 2]
+  import Ecto.Query, only: [order_by: 2, where: 2]
 
   alias AmadeusCho.{Event, Repo}
 
@@ -28,6 +28,13 @@ defmodule AmadeusCho.Event do
 
   def get_by(params) do
     Repo.get_by(Event, params) |> Repo.preload(:repository)
+  end
+
+  def get_for_repository(repository_id) do
+    Event
+    |> where(repository_id: ^repository_id)
+    |> Repo.all()
+    |> Repo.preload(:repository)
   end
 
   @doc false
