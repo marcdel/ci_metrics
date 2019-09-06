@@ -1,6 +1,7 @@
 defmodule AmadeusChoWeb.EventControllerTest do
   use AmadeusChoWeb.ConnCase, async: true
-  alias AmadeusCho.{Event, Project, Repository}
+  alias AmadeusCho.Project
+  alias AmadeusCho.Project.{Event, Repository}
 
   test "POST /api/events", %{conn: conn} do
     json_payload =

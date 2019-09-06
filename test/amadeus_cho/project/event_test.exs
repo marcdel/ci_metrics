@@ -1,6 +1,7 @@
-defmodule AmadeusCho.EventTest do
+defmodule AmadeusCho.Project.EventTest do
   use AmadeusCho.DataCase, async: true
-  alias AmadeusCho.{Event, Project, Repository}
+  alias AmadeusCho.Project
+  alias AmadeusCho.Project.{Event, Repository}
 
   test "get_all is ordered by repository id desc then by id desc" do
     Repository.insert_or_update(%{owner: "owner1", name: "repo1"})

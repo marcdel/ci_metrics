@@ -1,14 +1,15 @@
-defmodule AmadeusCho.Repository do
+defmodule AmadeusCho.Project.Repository do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias AmadeusCho.Repo
   # This name is not confusing at all
-  alias AmadeusCho.{Repository, Repo}
+  alias AmadeusCho.Project.Repository
 
   schema "repositories" do
     field :name, :string
     field :owner, :string
-    has_many :events, AmadeusCho.Event
+    has_many :events, AmadeusCho.Project.Event
 
     timestamps()
   end

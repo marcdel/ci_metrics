@@ -1,15 +1,16 @@
-defmodule AmadeusCho.Event do
+defmodule AmadeusCho.Project.Event do
   use Ecto.Schema
   import Ecto.Changeset
-  import Ecto.Query, only: [order_by: 2, where: 2]
+  import Ecto.Query, only: [order_by: 2]
 
-  alias AmadeusCho.{Event, Repo}
+  alias AmadeusCho.Repo
+  alias AmadeusCho.Project.Event
 
   schema "events" do
     field :raw, :map
     field :event_id, :string
     field :event_type, :string
-    belongs_to :repository, AmadeusCho.Repository
+    belongs_to :repository, AmadeusCho.Project.Repository
     timestamps()
   end
 

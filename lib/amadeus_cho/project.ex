@@ -1,5 +1,6 @@
 defmodule AmadeusCho.Project do
-  alias AmadeusCho.{Event, GithubClient, Repo, Repository}
+  alias AmadeusCho.{GithubClient, Repo}
+  alias AmadeusCho.Project.{Event, Repository}
   import Ecto.Query, only: [where: 2]
 
   def create_webhook(repository_name, access_token) do

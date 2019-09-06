@@ -1,6 +1,7 @@
 defmodule AmadeusCho.ProjectTest do
   use AmadeusCho.DataCase, async: true
-  alias AmadeusCho.{Event, Project, Repository}
+  alias AmadeusCho.Project
+  alias AmadeusCho.Project.{Event, Repository}
 
   describe "create_event/3" do
     test "creates a repository if one isn't found" do

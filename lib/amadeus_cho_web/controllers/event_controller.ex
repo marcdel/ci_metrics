@@ -1,6 +1,7 @@
 defmodule AmadeusChoWeb.EventController do
   use AmadeusChoWeb, :controller
-  alias AmadeusCho.{Event, Project}
+  alias AmadeusCho.Project
+  alias AmadeusCho.Project.Event
 
   def create(conn, event) do
     [event_id] = get_req_header(conn, "x-github-delivery")
