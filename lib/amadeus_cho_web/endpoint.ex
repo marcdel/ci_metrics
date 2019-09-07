@@ -26,6 +26,9 @@ defmodule AmadeusChoWeb.Endpoint do
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
+  plug Plug.WebhookEventValidator,
+    secret: Application.get_env(:amadeus_cho, :github_secret)
+
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
