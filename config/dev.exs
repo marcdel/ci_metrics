@@ -75,4 +75,8 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :amadeus_cho, webhook_callback_url: "http://aaf59627.ngrok.io/api/events"
+webhook_callback_url = System.get_env("WEBHOOK_CALLBACK_URL")
+config :amadeus_cho, webhook_callback_url: webhook_callback_url
+
+github_secret = System.get_env("GITHUB_SECRET")
+config :amadeus_cho, github_secret: github_secret

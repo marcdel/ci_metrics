@@ -9,10 +9,12 @@ defmodule AmadeusChoWeb.EventControllerTest do
       |> Path.expand(__DIR__)
       |> File.read!()
 
+    Application.put_env(:amadeus_cho, :github_secret, "super secret")
+
     conn =
       conn
       |> put_req_header("content-type", "application/json")
-      |> put_req_header("x-hub-signature", "sha1=7581fc043b8c47b860b96cfd36fd7078955774e7")
+      |> put_req_header("x-hub-signature", "sha1=e6811e24ecfb71b46940f4dbba5c5b456df5b1d1")
       |> put_req_header("x-github-delivery", "05b648a1-86cd-4777-bd5c-2e12302d75d3")
       |> put_req_header("x-github-event", "push")
       |> post("/api/events", json_payload)
@@ -23,6 +25,27 @@ defmodule AmadeusChoWeb.EventControllerTest do
     assert event.event_id == "05b648a1-86cd-4777-bd5c-2e12302d75d3"
     assert event.event_type == "push"
     assert event.raw["sender"]["login"] == "marcdel"
+  end
+
+  test "POST /api/events when given an invalid signature", %{conn: conn} do
+    json_payload =
+      "../../support/push.json"
+      |> Path.expand(__DIR__)
+      |> File.read!()
+
+    Application.put_env(:amadeus_cho, :github_secret, "invalid secret")
+
+    conn =
+      conn
+      |> put_req_header("content-type", "application/json")
+      |> put_req_header("x-hub-signature", "sha1=e6811e24ecfb71b46940f4dbba5c5b456df5b1d1")
+      |> put_req_header("x-github-delivery", "05b648a1-86cd-4777-bd5c-2e12302d75d3")
+      |> put_req_header("x-github-event", "push")
+      |> post("/api/events", json_payload)
+
+    assert json_response(conn, 403)
+
+    [] = Event.get_all()
   end
 
   test "GET /events", %{conn: conn} do

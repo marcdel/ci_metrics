@@ -36,6 +36,12 @@ webhook_callback_url =
 
 config :amadeus_cho, webhook_callback_url: webhook_callback_url
 
+github_secret =
+  System.get_env("GITHUB_SECRET") ||
+    raise "Environment variable GITHUB_SECRET is missing."
+
+config :amadeus_cho, github_secret: github_secret
+
 # ## Using releases (Elixir v1.9+)
 #
 # If you are doing OTP releases, you need to instruct Phoenix
