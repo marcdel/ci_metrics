@@ -1,7 +1,9 @@
 defmodule AmadeusCho.Project do
-  alias AmadeusCho.{GithubClient, Repo}
-  alias AmadeusCho.Project.{Event, Repository}
+  require Logger
   import Ecto.Query, only: [where: 2]
+
+  alias AmadeusCho.{GithubClient, Repo}
+  alias AmadeusCho.Project.{Commit, Event, Repository}
 
   def create_webhook(repository_name, access_token) do
     GithubClient.create_webhook(%{
@@ -27,7 +29,31 @@ defmodule AmadeusCho.Project do
 
     %Event{}
     |> Event.raw_event_changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert(returning: true)
+  end
+
+  def process_event(%Event{event_type: "push"} = event) do
+    event.raw
+    |> extract_commit_info()
+    |> Enum.map(fn raw_commit ->
+      Map.merge(raw_commit, %{repository_id: event.repository_id, event_id: event.id})
+    end)
+    |> Enum.map(fn raw_commit ->
+      %Commit{}
+      |> Commit.changeset(raw_commit)
+      |> Repo.insert()
+    end)
+    |> Enum.each(fn
+      # NoOp
+      {:ok, _commit} -> :ok
+      {:error, changeset} -> Logger.error("Unable to save commit #{inspect(changeset)}")
+    end)
+
+    {:ok, event}
+  end
+
+  def process_event(%Event{event_type: event_type}) do
+    Logger.error("Process not defined for #{event_type}")
   end
 
   def get_events_for(%{repository_id: id}) when is_binary(id) do
@@ -53,12 +79,27 @@ defmodule AmadeusCho.Project do
     repository_full_name = Kernel.get_in(raw_event, ["repository", "full_name"])
     git_url = Kernel.get_in(raw_event, ["repository", "git_url"])
 
-    [owner, name] = do_extract_repository_info(repository_full_name, git_url)
+    [owner, name] = parse_repository_name(repository_full_name, git_url)
 
     %{owner: owner, name: name}
   end
 
-  defp do_extract_repository_info(nil, git_url) do
+  defp extract_commit_info(raw_event) do
+    branch =
+      raw_event
+      |> Map.get("ref")
+      |> String.split("/")
+      |> List.last()
+
+    raw_event
+    |> Map.get("commits")
+    |> Enum.map(fn commit ->
+      {:ok, committed_at, _offset_in_seconds} = DateTime.from_iso8601(commit["timestamp"])
+      %{sha: commit["id"], branch: branch, committed_at: committed_at}
+    end)
+  end
+
+  defp parse_repository_name(nil, git_url) do
     git_url
     |> URI.parse()
     |> Map.get(:path)
@@ -67,7 +108,7 @@ defmodule AmadeusCho.Project do
     |> Path.split()
   end
 
-  defp do_extract_repository_info(repository_full_name, _) do
+  defp parse_repository_name(repository_full_name, _) do
     String.split(repository_full_name, "/")
   end
 end

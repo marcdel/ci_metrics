@@ -1,10 +1,32 @@
 defmodule AmadeusCho.ProjectTest do
   use AmadeusCho.DataCase, async: true
   alias AmadeusCho.Project
-  alias AmadeusCho.Project.{Event, Repository}
+  alias AmadeusCho.Project.{Commit, Event, Repository}
 
   describe "create_event/3" do
-    test "creates a repository if one isn't found" do
+    test "creates an event with the id, type and raw event" do
+      event_id = "05b648a1-86cd-4777-bd5c-2e12302d75d3"
+      event_type = "push"
+
+      raw_event =
+        "../support/push.json"
+        |> Path.expand(__DIR__)
+        |> File.read!()
+        |> Jason.decode!()
+
+      Project.create_event(%{
+        event_id: event_id,
+        event_type: event_type,
+        raw_event: raw_event
+      })
+
+      [event] = Event.get_all()
+      assert event.event_id == "05b648a1-86cd-4777-bd5c-2e12302d75d3"
+      assert event.event_type == "push"
+      assert event.raw == raw_event
+    end
+
+    test "creates a repository if one isn't found and associates it with the event" do
       event_id = "05b648a1-86cd-4777-bd5c-2e12302d75d3"
       event_type = "push"
 
@@ -25,9 +47,64 @@ defmodule AmadeusCho.ProjectTest do
       assert repository.owner == "marcdel"
 
       [event] = Event.get_all()
-      assert event.event_id == "05b648a1-86cd-4777-bd5c-2e12302d75d3"
-      assert event.event_type == "push"
       assert event.repository_id == repository.id
+    end
+  end
+
+  describe "process_event/1" do
+    test "push event creates a commit record for each commit in the push" do
+      event_id = "05b648a1-86cd-4777-bd5c-2e12302d75d3"
+      event_type = "push"
+
+      raw_event =
+        "../support/fixtures/multi_push.json"
+        |> Path.expand(__DIR__)
+        |> File.read!()
+        |> Jason.decode!()
+
+      {:ok, event} =
+        Project.create_event(%{
+          event_id: event_id,
+          event_type: event_type,
+          raw_event: raw_event
+        })
+
+      {:ok, _} = Project.process_event(event)
+
+      [commit1, commit2] = Commit.get_all()
+      assert commit1.sha == "b5ec9bbdd6a75451e02f9a464fe2418d9eaead81"
+      assert commit1.branch == "master"
+      assert DateTime.to_string(commit1.committed_at) == "2019-09-06 03:26:10Z"
+
+      assert commit2.sha == "8dfe6b686e0bf1a2860b03f6d2e4567002d3fdda"
+      assert commit2.branch == "master"
+      assert DateTime.to_string(commit2.committed_at) == "2019-09-06 03:26:16Z"
+    end
+
+    test "push event associates commits with the repository and event" do
+      event_id = "05b648a1-86cd-4777-bd5c-2e12302d75d3"
+      event_type = "push"
+
+      raw_event =
+        "../support/fixtures/multi_push.json"
+        |> Path.expand(__DIR__)
+        |> File.read!()
+        |> Jason.decode!()
+
+      {:ok, event} =
+        Project.create_event(%{
+          event_id: event_id,
+          event_type: event_type,
+          raw_event: raw_event
+        })
+
+      {:ok, _} = Project.process_event(event)
+
+      [commit1, commit2] = Commit.get_all()
+      assert commit1.event_id != nil
+      assert commit1.repository_id != nil
+      assert commit2.event_id == commit1.event_id
+      assert commit2.repository_id == commit1.repository_id
     end
   end
 

@@ -10,6 +10,7 @@ defmodule AmadeusCho.Project.Repository do
     field :name, :string
     field :owner, :string
     has_many :events, AmadeusCho.Project.Event
+    has_many :commits, AmadeusCho.Project.Commit
 
     timestamps()
   end
@@ -31,7 +32,6 @@ defmodule AmadeusCho.Project.Repository do
     Repo.all(Repository)
   end
 
-  @doc false
   def changeset(repository, attrs) do
     repository
     |> cast(attrs, [:name, :owner])

@@ -11,6 +11,8 @@ defmodule AmadeusCho.Project.Event do
     field :event_id, :string
     field :event_type, :string
     belongs_to :repository, AmadeusCho.Project.Repository
+    has_many :commits, AmadeusCho.Project.Commit
+
     timestamps()
   end
 
@@ -25,7 +27,6 @@ defmodule AmadeusCho.Project.Event do
     Repo.get_by(Event, params) |> Repo.preload(:repository)
   end
 
-  @doc false
   def raw_event_changeset(event, attrs) do
     event
     |> cast(attrs, [:raw, :event_id, :event_type, :repository_id])
