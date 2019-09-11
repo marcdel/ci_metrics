@@ -1,6 +1,8 @@
 defmodule AmadeusCho.GithubClient do
   require Logger
 
+  @http_client Application.get_env(:amadeus_cho, :http_client, AmadeusCho.HTTPClient)
+
   @callback create_webhook(map()) :: {:ok, nil} | {:error, any()}
   def create_webhook(webhook) do
     url =
@@ -20,9 +22,7 @@ defmodule AmadeusCho.GithubClient do
         }
       })
 
-    http_client = Application.get_env(:amadeus_cho, :http_client, AmadeusCho.HTTPClient)
-
-    {_, response} = http_client.post(url, [{"content-type", "application/json"}], body, [])
+    {_, response} = @http_client.post(url, [{"content-type", "application/json"}], body, [])
 
     validate_response(webhook.repository_name, response)
   end

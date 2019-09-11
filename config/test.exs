@@ -18,6 +18,7 @@ config :amadeus_cho, webhook_callback_url: "localhost:4000/api/events"
 
 # Mocks
 config :amadeus_cho, :http_client, MockHTTPClient
+config :amadeus_cho, :project, MockProject
 
 # Print only warnings and errors during test
 config :logger, level: :warn

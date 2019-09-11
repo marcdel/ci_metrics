@@ -14,6 +14,7 @@ defmodule AmadeusCho.Project do
     })
   end
 
+  @callback create_event(map()) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
   def create_event(%{event_id: event_id, event_type: event_type, raw_event: raw_event}) do
     {:ok, repository} =
       raw_event
@@ -32,6 +33,7 @@ defmodule AmadeusCho.Project do
     |> Repo.insert(returning: true)
   end
 
+  @callback process_event(%Event{}) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
   def process_event(%Event{event_type: "push"} = event) do
     event.raw
     |> extract_commit_info()
@@ -56,6 +58,7 @@ defmodule AmadeusCho.Project do
     Logger.error("Process not defined for #{event_type}")
   end
 
+  @callback get_events_for(struct()) :: [Event.type()]
   def get_events_for(%{repository_id: id}) when is_binary(id) do
     id
     |> Integer.parse()

@@ -2,6 +2,7 @@ defmodule AmadeusCho.GithubClientTest do
   import Mox
   use ExUnit.Case, async: true
   alias AmadeusCho.GithubClient
+
   setup :verify_on_exit!
 
   test "create_webhook/1 returns ok when receiving a 201" do
