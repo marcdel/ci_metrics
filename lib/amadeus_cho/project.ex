@@ -33,25 +33,22 @@ defmodule AmadeusCho.Project do
     |> Repo.insert(returning: true)
   end
 
-  @callback process_event(%Event{}) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
+  @callback process_event(%Event{}) :: %{ok: [Ecto.Schema.t()], error: [Ecto.Changeset.t()]}
   def process_event(%Event{event_type: "push"} = event) do
     event.raw
     |> extract_commit_info()
     |> Enum.map(fn raw_commit ->
       Map.merge(raw_commit, %{repository_id: event.repository_id, event_id: event.id})
     end)
-    |> Enum.map(fn raw_commit ->
-      %Commit{}
-      |> Commit.changeset(raw_commit)
-      |> Repo.insert()
-    end)
-    |> Enum.each(fn
-      # NoOp
-      {:ok, _commit} -> :ok
-      {:error, changeset} -> Logger.error("Unable to save commit #{inspect(changeset)}")
-    end)
+    |> Enum.map(fn raw_commit -> Commit.insert_or_update(raw_commit) end)
+    |> Enum.reduce(%{ok: [], error: []}, fn
+      {:ok, commit}, result ->
+        %{result | ok: [commit | result.ok]}
 
-    {:ok, event}
+      {:error, changeset}, result ->
+        Logger.error("Unable to save commit: #{inspect(changeset)}")
+        %{result | error: [changeset | result.error]}
+    end)
   end
 
   def process_event(%Event{event_type: event_type}) do

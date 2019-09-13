@@ -31,6 +31,7 @@ defmodule AmadeusCho.Project.Event do
     event
     |> cast(attrs, [:raw, :event_id, :event_type, :repository_id])
     |> validate_required([:raw, :event_id, :event_type, :repository_id])
+    |> foreign_key_constraint(:repository_id)
     |> unique_constraint(:event_id)
   end
 end

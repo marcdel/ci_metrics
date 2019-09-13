@@ -49,6 +49,30 @@ defmodule AmadeusCho.ProjectTest do
       [event] = Event.get_all()
       assert event.repository_id == repository.id
     end
+
+    test "cannot create the same event twice" do
+      event_type = "push"
+
+      raw_event =
+        "../support/push.json"
+        |> Path.expand(__DIR__)
+        |> File.read!()
+        |> Jason.decode!()
+
+      assert {:ok, _event} =
+               Project.create_event(%{
+                 event_id: "same-event-id",
+                 event_type: event_type,
+                 raw_event: raw_event
+               })
+
+      assert {:error, %Ecto.Changeset{}} =
+               Project.create_event(%{
+                 event_id: "same-event-id",
+                 event_type: event_type,
+                 raw_event: raw_event
+               })
+    end
   end
 
   describe "process_event/1" do
@@ -69,16 +93,15 @@ defmodule AmadeusCho.ProjectTest do
           raw_event: raw_event
         })
 
-      {:ok, _} = Project.process_event(event)
+      %{ok: [commit1, commit2], error: []} = Project.process_event(event)
 
-      [commit1, commit2] = Commit.get_all()
-      assert commit1.sha == "b5ec9bbdd6a75451e02f9a464fe2418d9eaead81"
+      assert commit1.sha == "8dfe6b686e0bf1a2860b03f6d2e4567002d3fdda"
       assert commit1.branch == "master"
-      assert DateTime.to_string(commit1.committed_at) == "2019-09-06 03:26:10Z"
+      assert DateTime.to_string(commit1.committed_at) == "2019-09-06 03:26:16Z"
 
-      assert commit2.sha == "8dfe6b686e0bf1a2860b03f6d2e4567002d3fdda"
+      assert commit2.sha == "b5ec9bbdd6a75451e02f9a464fe2418d9eaead81"
       assert commit2.branch == "master"
-      assert DateTime.to_string(commit2.committed_at) == "2019-09-06 03:26:16Z"
+      assert DateTime.to_string(commit2.committed_at) == "2019-09-06 03:26:10Z"
     end
 
     test "push event associates commits with the repository and event" do
@@ -98,13 +121,34 @@ defmodule AmadeusCho.ProjectTest do
           raw_event: raw_event
         })
 
-      {:ok, _} = Project.process_event(event)
+      %{ok: [commit1, commit2], error: []} = Project.process_event(event)
 
-      [commit1, commit2] = Commit.get_all()
       assert commit1.event_id != nil
       assert commit1.repository_id != nil
       assert commit2.event_id == commit1.event_id
       assert commit2.repository_id == commit1.repository_id
+    end
+
+    test "cannot create the same commit twice" do
+      event_id = "05b648a1-86cd-4777-bd5c-2e12302d75d3"
+      event_type = "push"
+
+      raw_event =
+        "../support/fixtures/multi_push.json"
+        |> Path.expand(__DIR__)
+        |> File.read!()
+        |> Jason.decode!()
+
+      {:ok, event} =
+        Project.create_event(%{
+          event_id: event_id,
+          event_type: event_type,
+          raw_event: raw_event
+        })
+
+      assert %{ok: [commit1, commit2], error: []} = Project.process_event(event)
+      assert %{ok: [^commit1, ^commit2], error: []} = Project.process_event(event)
+      assert Commit.get_all() |> Enum.count() == 2
     end
   end
 

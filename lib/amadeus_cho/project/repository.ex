@@ -36,5 +36,6 @@ defmodule AmadeusCho.Project.Repository do
     repository
     |> cast(attrs, [:name, :owner])
     |> validate_required([:name, :owner])
+    |> unique_constraint(:name, name: :repositories_name_owner_index)
   end
 end

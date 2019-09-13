@@ -12,13 +12,37 @@ defmodule AmadeusChoWeb.EventController do
     request = %{event_id: event_id, event_type: event_type, raw_event: event}
 
     with {:ok, event} <- @project.create_event(request),
-         {:ok, _} <- @project.process_event(event) do
+         %{ok: _, error: []} <- @project.process_event(event) do
       json(conn, %{success: true})
     else
-      {:error, %Ecto.Changeset{} = changeset} ->
-        json(conn, %{success: false, error: changeset.errors})
+      {:error, %Ecto.Changeset{data: %Event{}}} ->
+        conn
+        |> put_status(400)
+        |> json(%{success: false, error: "There was a problem creating this event"})
+
+      %{ok: [], error: _} ->
+        conn
+        |> put_status(400)
+        |> json(%{
+          success: false,
+          error: "Event successfully saved, but all processing failed"
+        })
+
+      %{ok: _, error: _} ->
+        conn
+        |> put_status(400)
+        |> json(%{
+          success: false,
+          error: "Event successfully saved, but some processing failed"
+        })
+
       {:error, _} ->
-        json(conn, %{success: false, error: "Error: unable to create or process event."})
+        conn
+        |> put_status(500)
+        |> json(%{
+          success: false,
+          error: "There was a problem creating or processing this event"
+        })
     end
   end
 
