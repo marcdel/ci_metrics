@@ -16,10 +16,7 @@ defmodule CiMetrics.Project do
 
   @callback create_event(map()) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
   def create_event(%{event_id: event_id, event_type: event_type, raw_event: raw_event}) do
-    {:ok, repository} =
-      raw_event
-      |> extract_repository_info()
-      |> Repository.insert_or_update()
+    {:ok, repository} = Repository.from_raw_event(raw_event)
 
     attrs = %{
       event_id: event_id,
@@ -74,15 +71,6 @@ defmodule CiMetrics.Project do
     |> Repo.preload(:repository)
   end
 
-  defp extract_repository_info(raw_event) do
-    repository_full_name = Kernel.get_in(raw_event, ["repository", "full_name"])
-    git_url = Kernel.get_in(raw_event, ["repository", "git_url"])
-
-    [owner, name] = parse_repository_name(repository_full_name, git_url)
-
-    %{owner: owner, name: name}
-  end
-
   defp extract_commit_info(raw_event) do
     branch =
       raw_event
@@ -96,18 +84,5 @@ defmodule CiMetrics.Project do
       {:ok, committed_at, _offset_in_seconds} = DateTime.from_iso8601(commit["timestamp"])
       %{sha: commit["id"], branch: branch, committed_at: committed_at}
     end)
-  end
-
-  defp parse_repository_name(nil, git_url) do
-    git_url
-    |> URI.parse()
-    |> Map.get(:path)
-    |> Path.rootname()
-    |> Path.relative()
-    |> Path.split()
-  end
-
-  defp parse_repository_name(repository_full_name, _) do
-    String.split(repository_full_name, "/")
   end
 end
