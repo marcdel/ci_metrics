@@ -30,12 +30,7 @@ defmodule CiMetrics.Project do
 
   @callback process_event(%Event{}) :: %{ok: [Ecto.Schema.t()], error: [Ecto.Changeset.t()]}
   def process_event(%Event{event_type: "push"} = event) do
-    event.raw
-    |> extract_commit_info()
-    |> Enum.map(fn raw_commit ->
-      Map.merge(raw_commit, %{repository_id: event.repository_id, event_id: event.id})
-    end)
-    |> Enum.map(fn raw_commit -> Commit.insert_or_update(raw_commit) end)
+    Commit.from_event(event)
     |> Enum.reduce(%{ok: [], error: []}, fn
       {:ok, commit}, result ->
         %{result | ok: [commit | result.ok]}
@@ -64,25 +59,10 @@ defmodule CiMetrics.Project do
     do_get_events_for_repository(id)
   end
 
-  defp do_get_events_for_repository(id) when is_integer(id) do
+  defp do_get_events_for_repository(id) do
     Event
     |> where(repository_id: ^id)
     |> Repo.all()
     |> Repo.preload(:repository)
-  end
-
-  defp extract_commit_info(raw_event) do
-    branch =
-      raw_event
-      |> Map.get("ref")
-      |> String.split("/")
-      |> List.last()
-
-    raw_event
-    |> Map.get("commits")
-    |> Enum.map(fn commit ->
-      {:ok, committed_at, _offset_in_seconds} = DateTime.from_iso8601(commit["timestamp"])
-      %{sha: commit["id"], branch: branch, committed_at: committed_at}
-    end)
   end
 end
