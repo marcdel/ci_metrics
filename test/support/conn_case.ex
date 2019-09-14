@@ -1,4 +1,4 @@
-defmodule AmadeusChoWeb.ConnCase do
+defmodule CiMetricsWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -19,18 +19,18 @@ defmodule AmadeusChoWeb.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
-      alias AmadeusChoWeb.Router.Helpers, as: Routes
+      alias CiMetricsWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
-      @endpoint AmadeusChoWeb.Endpoint
+      @endpoint CiMetricsWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(AmadeusCho.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(CiMetrics.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(AmadeusCho.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(CiMetrics.Repo, {:shared, self()})
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}

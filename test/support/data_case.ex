@@ -1,4 +1,4 @@
-defmodule AmadeusCho.DataCase do
+defmodule CiMetrics.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
@@ -16,20 +16,20 @@ defmodule AmadeusCho.DataCase do
 
   using do
     quote do
-      alias AmadeusCho.Repo
+      alias CiMetrics.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import AmadeusCho.DataCase
+      import CiMetrics.DataCase
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(AmadeusCho.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(CiMetrics.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(AmadeusCho.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(CiMetrics.Repo, {:shared, self()})
     end
 
     :ok

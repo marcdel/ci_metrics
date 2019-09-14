@@ -7,15 +7,15 @@
 # General application configuration
 use Mix.Config
 
-config :amadeus_cho,
-  ecto_repos: [AmadeusCho.Repo]
+config :ci_metrics,
+  ecto_repos: [CiMetrics.Repo]
 
 # Configures the endpoint
-config :amadeus_cho, AmadeusChoWeb.Endpoint,
+config :ci_metrics, CiMetricsWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "dkeOpsTmpVZH0LLcq33qTptv633ZtDYVMKwDVGEFHw7zR8QY7HGIPZ1HvR7IjO4s",
-  render_errors: [view: AmadeusChoWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: AmadeusCho.PubSub, adapter: Phoenix.PubSub.PG2]
+  render_errors: [view: CiMetricsWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: CiMetrics.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,

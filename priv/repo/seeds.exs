@@ -5,7 +5,7 @@
 # Inside the script, you can read and write to any of your
 # repositories directly:
 #
-#     AmadeusCho.Repo.insert!(%AmadeusCho.SomeSchema{})
+#     CiMetrics.Repo.insert!(%CiMetrics.SomeSchema{})
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.

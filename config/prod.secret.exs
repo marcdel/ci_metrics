@@ -11,7 +11,7 @@ database_url =
     For example: ecto://USER:PASS@HOST/DATABASE
     """
 
-config :amadeus_cho, AmadeusCho.Repo,
+config :ci_metrics, CiMetrics.Repo,
   ssl: true,
   url: database_url,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
@@ -23,7 +23,7 @@ secret_key_base =
     You can generate one by calling: mix phx.gen.secret
     """
 
-config :amadeus_cho, AmadeusChoWeb.Endpoint,
+config :ci_metrics, CiMetricsWeb.Endpoint,
   http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
   secret_key_base: secret_key_base
 
@@ -34,20 +34,20 @@ webhook_callback_url =
     For example: http://aaf59627.ngrok.io/api/events
     """
 
-config :amadeus_cho, webhook_callback_url: webhook_callback_url
+config :ci_metrics, webhook_callback_url: webhook_callback_url
 
 github_secret =
   System.get_env("GITHUB_SECRET") ||
     raise "Environment variable GITHUB_SECRET is missing."
 
-config :amadeus_cho, github_secret: github_secret
+config :ci_metrics, github_secret: github_secret
 
 # ## Using releases (Elixir v1.9+)
 #
 # If you are doing OTP releases, you need to instruct Phoenix
 # to start each relevant endpoint:
 #
-#     config :amadeus_cho, AmadeusChoWeb.Endpoint, server: true
+#     config :ci_metrics, CiMetricsWeb.Endpoint, server: true
 #
 # Then you can assemble a release by calling `mix release`.
 # See `mix help release` for more information.

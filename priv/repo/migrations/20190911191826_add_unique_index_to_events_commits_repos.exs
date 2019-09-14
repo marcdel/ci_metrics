@@ -1,4 +1,4 @@
-defmodule AmadeusCho.Repo.Migrations.AddUniqueIndexToEventsAndCommits do
+defmodule CiMetrics.Repo.Migrations.AddUniqueIndexToEventsAndCommits do
   use Ecto.Migration
 
   def change do

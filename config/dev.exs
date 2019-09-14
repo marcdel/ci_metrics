@@ -1,10 +1,10 @@
 use Mix.Config
 
 # Configure your database
-config :amadeus_cho, AmadeusCho.Repo,
+config :ci_metrics, CiMetrics.Repo,
   username: "postgres",
   password: "postgres",
-  database: "amadeus_cho_dev",
+  database: "ci_metrics_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -15,7 +15,7 @@ config :amadeus_cho, AmadeusCho.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :amadeus_cho, AmadeusChoWeb.Endpoint,
+config :ci_metrics, CiMetricsWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: true,
@@ -55,13 +55,13 @@ config :amadeus_cho, AmadeusChoWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :amadeus_cho, AmadeusChoWeb.Endpoint,
+config :ci_metrics, CiMetricsWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/amadeus_cho_web/{live,views}/.*(ex)$",
-      ~r"lib/amadeus_cho_web/templates/.*(eex)$"
+      ~r"lib/ci_metrics_web/{live,views}/.*(ex)$",
+      ~r"lib/ci_metrics_web/templates/.*(eex)$"
     ]
   ]
 
@@ -76,7 +76,7 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 webhook_callback_url = System.get_env("WEBHOOK_CALLBACK_URL")
-config :amadeus_cho, webhook_callback_url: webhook_callback_url
+config :ci_metrics, webhook_callback_url: webhook_callback_url
 
 github_secret = System.get_env("GITHUB_SECRET")
-config :amadeus_cho, github_secret: github_secret
+config :ci_metrics, github_secret: github_secret

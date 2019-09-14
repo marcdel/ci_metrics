@@ -6,7 +6,7 @@
       "distinct": true,
       "message": "Move towards context methods",
       "timestamp": "2019-09-05T20:26:10-07:00",
-      "url": "https://github.com/marcdel/amadeus_cho/commit/b5ec9bbdd6a75451e02f9a464fe2418d9eaead81",
+      "url": "https://github.com/marcdel/ci_metrics/commit/b5ec9bbdd6a75451e02f9a464fe2418d9eaead81",
       "author": {
         "name": "Marc Delagrammatikas",
         "email": "delagrammatikas@gmail.com",
@@ -18,24 +18,24 @@
         "username": "marcdel"
       },
       "added": [
-        "lib/amadeus_cho/project.ex",
+        "lib/ci_metrics/project.ex",
         "start.sh",
-        "test/amadeus_cho/project_test.exs"
+        "test/ci_metrics/project_test.exs"
       ],
       "removed": [
-        "lib/amadeus_cho/organizations.ex",
-        "lib/amadeus_cho/organizations/webhook.ex",
-        "test/amadeus_cho/organizations_test.exs"
+        "lib/ci_metrics/organizations.ex",
+        "lib/ci_metrics/organizations/webhook.ex",
+        "test/ci_metrics/organizations_test.exs"
       ],
       "modified": [
-        "lib/amadeus_cho/organizations/event.ex",
-        "lib/amadeus_cho_web/controllers/event_controller.ex",
-        "lib/amadeus_cho_web/controllers/webhook_controller.ex",
-        "lib/amadeus_cho_web/templates/webhook/new.html.eex",
-        "test/amadeus_cho/github_client_test.exs",
-        "test/amadeus_cho/organizations/event_test.exs",
-        "test/amadeus_cho_web/controllers/event_controller_test.exs",
-        "test/amadeus_cho_web/controllers/webhook_controller_test.exs"
+        "lib/ci_metrics/organizations/event.ex",
+        "lib/ci_metrics_web/controllers/event_controller.ex",
+        "lib/ci_metrics_web/controllers/webhook_controller.ex",
+        "lib/ci_metrics_web/templates/webhook/new.html.eex",
+        "test/ci_metrics/github_client_test.exs",
+        "test/ci_metrics/organizations/event_test.exs",
+        "test/ci_metrics_web/controllers/event_controller_test.exs",
+        "test/ci_metrics_web/controllers/webhook_controller_test.exs"
       ]
     },
     {
@@ -44,7 +44,7 @@
       "distinct": true,
       "message": "Move Event and Repository under Project namespace",
       "timestamp": "2019-09-05T20:26:16-07:00",
-      "url": "https://github.com/marcdel/amadeus_cho/commit/8dfe6b686e0bf1a2860b03f6d2e4567002d3fdda",
+      "url": "https://github.com/marcdel/ci_metrics/commit/8dfe6b686e0bf1a2860b03f6d2e4567002d3fdda",
       "author": {
         "name": "Marc Delagrammatikas",
         "email": "delagrammatikas@gmail.com",
@@ -56,20 +56,20 @@
         "username": "marcdel"
       },
       "added": [
-        "lib/amadeus_cho/project/event.ex",
-        "lib/amadeus_cho/project/repository.ex",
-        "test/amadeus_cho/project/event_test.exs"
+        "lib/ci_metrics/project/event.ex",
+        "lib/ci_metrics/project/repository.ex",
+        "test/ci_metrics/project/event_test.exs"
       ],
       "removed": [
-        "lib/amadeus_cho/organizations/event.ex",
-        "lib/amadeus_cho/organizations/repository.ex",
-        "test/amadeus_cho/organizations/event_test.exs"
+        "lib/ci_metrics/organizations/event.ex",
+        "lib/ci_metrics/organizations/repository.ex",
+        "test/ci_metrics/organizations/event_test.exs"
       ],
       "modified": [
-        "lib/amadeus_cho/project.ex",
-        "lib/amadeus_cho_web/controllers/event_controller.ex",
-        "test/amadeus_cho/project_test.exs",
-        "test/amadeus_cho_web/controllers/event_controller_test.exs"
+        "lib/ci_metrics/project.ex",
+        "lib/ci_metrics_web/controllers/event_controller.ex",
+        "test/ci_metrics/project_test.exs",
+        "test/ci_metrics_web/controllers/event_controller_test.exs"
       ]
     }
   ],
@@ -79,7 +79,7 @@
     "distinct": true,
     "message": "Move Event and Repository under Project namespace",
     "timestamp": "2019-09-05T20:26:16-07:00",
-    "url": "https://github.com/marcdel/amadeus_cho/commit/8dfe6b686e0bf1a2860b03f6d2e4567002d3fdda",
+    "url": "https://github.com/marcdel/ci_metrics/commit/8dfe6b686e0bf1a2860b03f6d2e4567002d3fdda",
     "author": {
       "name": "Marc Delagrammatikas",
       "email": "delagrammatikas@gmail.com",
@@ -91,20 +91,20 @@
       "username": "marcdel"
     },
     "added": [
-      "lib/amadeus_cho/project/event.ex",
-      "lib/amadeus_cho/project/repository.ex",
-      "test/amadeus_cho/project/event_test.exs"
+      "lib/ci_metrics/project/event.ex",
+      "lib/ci_metrics/project/repository.ex",
+      "test/ci_metrics/project/event_test.exs"
     ],
     "removed": [
-      "lib/amadeus_cho/organizations/event.ex",
-      "lib/amadeus_cho/organizations/repository.ex",
-      "test/amadeus_cho/organizations/event_test.exs"
+      "lib/ci_metrics/organizations/event.ex",
+      "lib/ci_metrics/organizations/repository.ex",
+      "test/ci_metrics/organizations/event_test.exs"
     ],
     "modified": [
-      "lib/amadeus_cho/project.ex",
-      "lib/amadeus_cho_web/controllers/event_controller.ex",
-      "test/amadeus_cho/project_test.exs",
-      "test/amadeus_cho_web/controllers/event_controller_test.exs"
+      "lib/ci_metrics/project.ex",
+      "lib/ci_metrics_web/controllers/event_controller.ex",
+      "test/ci_metrics/project_test.exs",
+      "test/ci_metrics_web/controllers/event_controller_test.exs"
     ]
   },
   "ref": "refs/heads/master",
@@ -114,12 +114,12 @@
   "deleted": false,
   "forced": true,
   "base_ref": null,
-  "compare": "https://github.com/marcdel/amadeus_cho/compare/944ed5118c79...8dfe6b686e0b",
+  "compare": "https://github.com/marcdel/ci_metrics/compare/944ed5118c79...8dfe6b686e0b",
   "repository": {
     "id": 205228081,
     "node_id": "MDEwOlJlcG9zaXRvcnkyMDUyMjgwODE=",
-    "name": "amadeus_cho",
-    "full_name": "marcdel/amadeus_cho",
+    "name": "ci_metrics",
+    "full_name": "marcdel/ci_metrics",
     "private": true,
     "owner": {
       "name": "marcdel",
@@ -143,53 +143,53 @@
       "type": "User",
       "site_admin": false
     },
-    "html_url": "https://github.com/marcdel/amadeus_cho",
+    "html_url": "https://github.com/marcdel/ci_metrics",
     "description": "Amadeus Cho is a man with the mind of a supercomputer and power of Hercules. He can process multiple streams of information around him which allows him to find solutions to tactical challenges faster.",
     "fork": false,
-    "url": "https://github.com/marcdel/amadeus_cho",
-    "forks_url": "https://api.github.com/repos/marcdel/amadeus_cho/forks",
-    "keys_url": "https://api.github.com/repos/marcdel/amadeus_cho/keys{/key_id}",
-    "collaborators_url": "https://api.github.com/repos/marcdel/amadeus_cho/collaborators{/collaborator}",
-    "teams_url": "https://api.github.com/repos/marcdel/amadeus_cho/teams",
-    "hooks_url": "https://api.github.com/repos/marcdel/amadeus_cho/hooks",
-    "issue_events_url": "https://api.github.com/repos/marcdel/amadeus_cho/issues/events{/number}",
-    "events_url": "https://api.github.com/repos/marcdel/amadeus_cho/events",
-    "assignees_url": "https://api.github.com/repos/marcdel/amadeus_cho/assignees{/user}",
-    "branches_url": "https://api.github.com/repos/marcdel/amadeus_cho/branches{/branch}",
-    "tags_url": "https://api.github.com/repos/marcdel/amadeus_cho/tags",
-    "blobs_url": "https://api.github.com/repos/marcdel/amadeus_cho/git/blobs{/sha}",
-    "git_tags_url": "https://api.github.com/repos/marcdel/amadeus_cho/git/tags{/sha}",
-    "git_refs_url": "https://api.github.com/repos/marcdel/amadeus_cho/git/refs{/sha}",
-    "trees_url": "https://api.github.com/repos/marcdel/amadeus_cho/git/trees{/sha}",
-    "statuses_url": "https://api.github.com/repos/marcdel/amadeus_cho/statuses/{sha}",
-    "languages_url": "https://api.github.com/repos/marcdel/amadeus_cho/languages",
-    "stargazers_url": "https://api.github.com/repos/marcdel/amadeus_cho/stargazers",
-    "contributors_url": "https://api.github.com/repos/marcdel/amadeus_cho/contributors",
-    "subscribers_url": "https://api.github.com/repos/marcdel/amadeus_cho/subscribers",
-    "subscription_url": "https://api.github.com/repos/marcdel/amadeus_cho/subscription",
-    "commits_url": "https://api.github.com/repos/marcdel/amadeus_cho/commits{/sha}",
-    "git_commits_url": "https://api.github.com/repos/marcdel/amadeus_cho/git/commits{/sha}",
-    "comments_url": "https://api.github.com/repos/marcdel/amadeus_cho/comments{/number}",
-    "issue_comment_url": "https://api.github.com/repos/marcdel/amadeus_cho/issues/comments{/number}",
-    "contents_url": "https://api.github.com/repos/marcdel/amadeus_cho/contents/{+path}",
-    "compare_url": "https://api.github.com/repos/marcdel/amadeus_cho/compare/{base}...{head}",
-    "merges_url": "https://api.github.com/repos/marcdel/amadeus_cho/merges",
-    "archive_url": "https://api.github.com/repos/marcdel/amadeus_cho/{archive_format}{/ref}",
-    "downloads_url": "https://api.github.com/repos/marcdel/amadeus_cho/downloads",
-    "issues_url": "https://api.github.com/repos/marcdel/amadeus_cho/issues{/number}",
-    "pulls_url": "https://api.github.com/repos/marcdel/amadeus_cho/pulls{/number}",
-    "milestones_url": "https://api.github.com/repos/marcdel/amadeus_cho/milestones{/number}",
-    "notifications_url": "https://api.github.com/repos/marcdel/amadeus_cho/notifications{?since,all,participating}",
-    "labels_url": "https://api.github.com/repos/marcdel/amadeus_cho/labels{/name}",
-    "releases_url": "https://api.github.com/repos/marcdel/amadeus_cho/releases{/id}",
-    "deployments_url": "https://api.github.com/repos/marcdel/amadeus_cho/deployments",
+    "url": "https://github.com/marcdel/ci_metrics",
+    "forks_url": "https://api.github.com/repos/marcdel/ci_metrics/forks",
+    "keys_url": "https://api.github.com/repos/marcdel/ci_metrics/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/marcdel/ci_metrics/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/marcdel/ci_metrics/teams",
+    "hooks_url": "https://api.github.com/repos/marcdel/ci_metrics/hooks",
+    "issue_events_url": "https://api.github.com/repos/marcdel/ci_metrics/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/marcdel/ci_metrics/events",
+    "assignees_url": "https://api.github.com/repos/marcdel/ci_metrics/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/marcdel/ci_metrics/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/marcdel/ci_metrics/tags",
+    "blobs_url": "https://api.github.com/repos/marcdel/ci_metrics/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/marcdel/ci_metrics/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/marcdel/ci_metrics/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/marcdel/ci_metrics/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/marcdel/ci_metrics/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/marcdel/ci_metrics/languages",
+    "stargazers_url": "https://api.github.com/repos/marcdel/ci_metrics/stargazers",
+    "contributors_url": "https://api.github.com/repos/marcdel/ci_metrics/contributors",
+    "subscribers_url": "https://api.github.com/repos/marcdel/ci_metrics/subscribers",
+    "subscription_url": "https://api.github.com/repos/marcdel/ci_metrics/subscription",
+    "commits_url": "https://api.github.com/repos/marcdel/ci_metrics/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/marcdel/ci_metrics/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/marcdel/ci_metrics/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/marcdel/ci_metrics/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/marcdel/ci_metrics/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/marcdel/ci_metrics/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/marcdel/ci_metrics/merges",
+    "archive_url": "https://api.github.com/repos/marcdel/ci_metrics/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/marcdel/ci_metrics/downloads",
+    "issues_url": "https://api.github.com/repos/marcdel/ci_metrics/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/marcdel/ci_metrics/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/marcdel/ci_metrics/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/marcdel/ci_metrics/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/marcdel/ci_metrics/labels{/name}",
+    "releases_url": "https://api.github.com/repos/marcdel/ci_metrics/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/marcdel/ci_metrics/deployments",
     "created_at": 1567103921,
     "updated_at": "2019-09-06T03:10:39Z",
     "pushed_at": 1567740395,
-    "git_url": "git://github.com/marcdel/amadeus_cho.git",
-    "ssh_url": "git@github.com:marcdel/amadeus_cho.git",
-    "clone_url": "https://github.com/marcdel/amadeus_cho.git",
-    "svn_url": "https://github.com/marcdel/amadeus_cho",
+    "git_url": "git://github.com/marcdel/ci_metrics.git",
+    "ssh_url": "git@github.com:marcdel/ci_metrics.git",
+    "clone_url": "https://github.com/marcdel/ci_metrics.git",
+    "svn_url": "https://github.com/marcdel/ci_metrics",
     "homepage": "https://amadeus-cho.herokuapp.com",
     "size": 139,
     "stargazers_count": 0,

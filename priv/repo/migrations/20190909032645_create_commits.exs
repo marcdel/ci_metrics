@@ -1,4 +1,4 @@
-defmodule AmadeusCho.Repo.Migrations.CreateCommits do
+defmodule CiMetrics.Repo.Migrations.CreateCommits do
   use Ecto.Migration
 
   def change do

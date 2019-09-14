@@ -20,7 +20,7 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-amadeus_cho-*.tar
+ci_metrics-*.tar
 
 # If NPM crashes, it generates a log, let's ignore it too.
 npm-debug.log

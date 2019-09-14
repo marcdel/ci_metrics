@@ -1,2 +1,2 @@
-Mox.defmock(MockProject, for: AmadeusCho.Project)
-Mox.defmock(MockHTTPClient, for: AmadeusCho.HTTPClient)
+Mox.defmock(MockProject, for: CiMetrics.Project)
+Mox.defmock(MockHTTPClient, for: CiMetrics.HTTPClient)

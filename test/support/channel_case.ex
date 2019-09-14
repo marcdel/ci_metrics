@@ -1,4 +1,4 @@
-defmodule AmadeusChoWeb.ChannelCase do
+defmodule CiMetricsWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -21,15 +21,15 @@ defmodule AmadeusChoWeb.ChannelCase do
       use Phoenix.ChannelTest
 
       # The default endpoint for testing
-      @endpoint AmadeusChoWeb.Endpoint
+      @endpoint CiMetricsWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(AmadeusCho.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(CiMetrics.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(AmadeusCho.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(CiMetrics.Repo, {:shared, self()})
     end
 
     :ok

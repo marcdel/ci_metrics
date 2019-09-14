@@ -1,2 +1,2 @@
 ExUnit.start(capture_log: true)
-Ecto.Adapters.SQL.Sandbox.mode(AmadeusCho.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(CiMetrics.Repo, :manual)

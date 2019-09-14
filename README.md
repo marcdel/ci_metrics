@@ -1,4 +1,4 @@
-# AmadeusCho
+# CiMetrics
 
 To start your Phoenix server:
 
