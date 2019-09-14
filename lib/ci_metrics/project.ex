@@ -28,9 +28,7 @@ defmodule CiMetrics.Project do
       raw: raw_event
     }
 
-    %Event{}
-    |> Event.raw_event_changeset(attrs)
-    |> Repo.insert(returning: true)
+    Event.insert_or_update(attrs)
   end
 
   @callback process_event(%Event{}) :: %{ok: [Ecto.Schema.t()], error: [Ecto.Changeset.t()]}

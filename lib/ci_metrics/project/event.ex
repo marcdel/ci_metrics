@@ -27,6 +27,15 @@ defmodule CiMetrics.Project.Event do
     Repo.get_by(Event, params) |> Repo.preload(:repository)
   end
 
+  def insert_or_update(params) do
+    case Repo.get_by(Event, params) do
+      nil -> %Event{}
+      event -> event
+    end
+    |> raw_event_changeset(params)
+    |> Repo.insert_or_update()
+  end
+
   def raw_event_changeset(event, attrs) do
     event
     |> cast(attrs, [:raw, :event_id, :event_type, :repository_id])
