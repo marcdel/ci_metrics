@@ -1,8 +1,9 @@
 defmodule CiMetricsWeb.EventController do
   use CiMetricsWeb, :controller
+  alias CiMetrics.Project
   alias CiMetrics.Project.Event
 
-  @project Application.get_env(:ci_metrics, :project, CiMetrics.Project)
+  @project Application.get_env(:ci_metrics, :project, Project)
 
   def create(conn, _) do
     [event_id] = get_req_header(conn, "x-github-delivery")

@@ -51,6 +51,7 @@ defmodule CiMetrics.Project do
 
   def process_event(%Event{event_type: event_type}) do
     Logger.error("Process not defined for #{event_type}")
+    %{ok: [], error: []}
   end
 
   @callback get_events_for(struct()) :: [Event.type()]

@@ -59,19 +59,21 @@ defmodule CiMetrics.ProjectTest do
         |> File.read!()
         |> Jason.decode!()
 
-      assert {:ok, _event} =
+      assert {:ok, event} =
                Project.create_event(%{
                  event_id: "same-event-id",
                  event_type: event_type,
                  raw_event: raw_event
                })
 
-      assert {:error, %Ecto.Changeset{}} =
+      assert {:ok, ^event} =
                Project.create_event(%{
                  event_id: "same-event-id",
                  event_type: event_type,
                  raw_event: raw_event
                })
+
+      assert Event.get_all() |> Enum.count() == 1
     end
   end
 
@@ -149,6 +151,26 @@ defmodule CiMetrics.ProjectTest do
       assert %{ok: [commit1, commit2], error: []} = Project.process_event(event)
       assert %{ok: [^commit1, ^commit2], error: []} = Project.process_event(event)
       assert Commit.get_all() |> Enum.count() == 2
+    end
+
+    test "handles unknown event types" do
+      event_id = "05b648a1-86cd-4777-bd5c-2e12302d75d3"
+      event_type = "unknown_type"
+
+      raw_event =
+        "../support/fixtures/unknown_event.json"
+        |> Path.expand(__DIR__)
+        |> File.read!()
+        |> Jason.decode!()
+
+      {:ok, event} =
+        Project.create_event(%{
+          event_id: event_id,
+          event_type: event_type,
+          raw_event: raw_event
+        })
+
+      assert %{ok: [], error: []} = Project.process_event(event)
     end
   end
 
