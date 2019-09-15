@@ -11,6 +11,7 @@ defmodule CiMetrics.Project.Repository do
     field :owner, :string
     has_many :events, CiMetrics.Project.Event
     has_many :commits, CiMetrics.Project.Commit
+    has_many :deployments, CiMetrics.Project.Deployment
 
     timestamps()
   end

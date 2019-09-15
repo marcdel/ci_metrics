@@ -3,7 +3,7 @@ defmodule CiMetrics.Project do
   import Ecto.Query, only: [where: 2]
 
   alias CiMetrics.{GithubClient, Repo}
-  alias CiMetrics.Project.{Commit, Event, Repository}
+  alias CiMetrics.Project.{Commit, Deployment, Event, Repository}
 
   def create_webhook(repository_name, access_token) do
     GithubClient.create_webhook(%{
@@ -39,6 +39,17 @@ defmodule CiMetrics.Project do
         Logger.error("Unable to save commit: #{inspect(changeset)}")
         %{result | error: [changeset | result.error]}
     end)
+  end
+
+  def process_event(%Event{event_type: "deployment"} = event) do
+    case Deployment.from_event(event) do
+      {:ok, %Deployment{} = deployment} ->
+        %{ok: [deployment], error: []}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        Logger.error("Unable to save deployment: #{inspect(changeset)}")
+        %{ok: [], error: [changeset]}
+    end
   end
 
   def process_event(%Event{event_type: event_type}) do

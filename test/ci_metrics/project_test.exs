@@ -100,33 +100,12 @@ defmodule CiMetrics.ProjectTest do
       assert commit1.sha == "8dfe6b686e0bf1a2860b03f6d2e4567002d3fdda"
       assert commit1.branch == "master"
       assert DateTime.to_string(commit1.committed_at) == "2019-09-06 03:26:16Z"
+      assert commit1.event_id != nil
+      assert commit1.repository_id != nil
 
       assert commit2.sha == "b5ec9bbdd6a75451e02f9a464fe2418d9eaead81"
       assert commit2.branch == "master"
       assert DateTime.to_string(commit2.committed_at) == "2019-09-06 03:26:10Z"
-    end
-
-    test "push event associates commits with the repository and event" do
-      event_id = "05b648a1-86cd-4777-bd5c-2e12302d75d3"
-      event_type = "push"
-
-      raw_event =
-        "../support/fixtures/multi_push.json"
-        |> Path.expand(__DIR__)
-        |> File.read!()
-        |> Jason.decode!()
-
-      {:ok, event} =
-        Project.create_event(%{
-          event_id: event_id,
-          event_type: event_type,
-          raw_event: raw_event
-        })
-
-      %{ok: [commit1, commit2], error: []} = Project.process_event(event)
-
-      assert commit1.event_id != nil
-      assert commit1.repository_id != nil
       assert commit2.event_id == commit1.event_id
       assert commit2.repository_id == commit1.repository_id
     end
@@ -151,6 +130,33 @@ defmodule CiMetrics.ProjectTest do
       assert %{ok: [commit1, commit2], error: []} = Project.process_event(event)
       assert %{ok: [^commit1, ^commit2], error: []} = Project.process_event(event)
       assert Commit.get_all() |> Enum.count() == 2
+    end
+
+    test "can process deployment events" do
+      event_id = "05b648a1-86cd-4777-bd5c-2e12302d75d3"
+      event_type = "deployment"
+
+      raw_event =
+        "../support/fixtures/deployment.json"
+        |> Path.expand(__DIR__)
+        |> File.read!()
+        |> Jason.decode!()
+
+      {:ok, event} =
+        Project.create_event(%{
+          event_id: event_id,
+          event_type: event_type,
+          raw_event: raw_event
+        })
+
+      %{ok: [deployment], error: []} = Project.process_event(event)
+
+      assert deployment.deployment_id == 167_780_832
+      assert deployment.sha == "eb475e393647070a6b0273b9d284dbc535bb4d7a"
+      assert DateTime.to_string(deployment.created_at) == "2019-09-08 21:55:48Z"
+
+      assert deployment.event_id != nil
+      assert deployment.repository_id != nil
     end
 
     test "handles unknown event types" do
