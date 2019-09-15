@@ -7,7 +7,7 @@ defmodule CiMetrics.Project.Deployment do
   schema "deployments" do
     field :deployment_id, :integer
     field :sha, :string
-    field :created_at, :utc_datetime
+    field :started_at, :utc_datetime
     belongs_to :event, Event
     belongs_to :repository, Repository
 
@@ -36,20 +36,20 @@ defmodule CiMetrics.Project.Deployment do
 
   defp extract_deployment_info(raw_event) do
     deployment = raw_event["deployment"]
-    {:ok, created_at, _offset_in_seconds} = DateTime.from_iso8601(deployment["created_at"])
+    {:ok, started_at, _offset_in_seconds} = DateTime.from_iso8601(deployment["created_at"])
 
     %{
       deployment_id: deployment["id"],
       sha: deployment["sha"],
-      created_at: created_at
+      started_at: started_at
     }
   end
 
   @doc false
   def changeset(deployment, attrs) do
     deployment
-    |> cast(attrs, [:deployment_id, :sha, :created_at, :repository_id, :event_id])
-    |> validate_required([:deployment_id, :sha, :created_at, :repository_id, :event_id])
+    |> cast(attrs, [:deployment_id, :sha, :started_at, :repository_id, :event_id])
+    |> validate_required([:deployment_id, :sha, :started_at, :repository_id, :event_id])
     |> foreign_key_constraint(:repository_id)
     |> foreign_key_constraint(:event_id)
     |> unique_constraint(:deploymeny_id)
