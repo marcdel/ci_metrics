@@ -1,7 +1,7 @@
 defmodule CiMetrics.ProjectTest do
   use CiMetrics.DataCase, async: true
   alias CiMetrics.Project
-  alias CiMetrics.Project.{Commit, Event, Repository}
+  alias CiMetrics.Project.{Commit, Deployment, Event, Repository}
 
   describe "create_event/3" do
     test "creates an event with the id, type and raw event" do
@@ -157,6 +157,51 @@ defmodule CiMetrics.ProjectTest do
 
       assert deployment.event_id != nil
       assert deployment.repository_id != nil
+    end
+
+    test "can process deployment_status events" do
+      event_id = "05b648a1-86cd-4777-bd5c-2e12302d75d3"
+      event_type = "deployment_status"
+
+      {:ok, now} = DateTime.now("Etc/UTC")
+      {:ok, repository} = Repository.insert_or_update(%{owner: "owner", name: "name"})
+
+      {:ok, deployment_event} =
+        Event.insert_or_update(%{
+          raw: %{},
+          event_id: "345645",
+          event_type: "deployment",
+          repository_id: repository.id
+        })
+
+      Deployment.insert_or_update(%{
+        deployment_id: 167_780_832,
+        sha: "eb475e393647070a6b0273b9d284dbc535bb4d7a",
+        started_at: now,
+        repository_id: repository.id,
+        event_id: deployment_event.id
+      })
+
+      raw_event =
+        "../support/fixtures/deployment_status.json"
+        |> Path.expand(__DIR__)
+        |> File.read!()
+        |> Jason.decode!()
+
+      {:ok, event} =
+        Project.create_event(%{
+          event_id: event_id,
+          event_type: event_type,
+          raw_event: raw_event
+        })
+
+      %{ok: [deployment_status], error: []} = Project.process_event(event)
+
+      assert deployment_status.deployment_status_id == 239_119_259
+      assert deployment_status.deployment_id == 167_780_832
+      assert deployment_status.status == "success"
+      assert DateTime.to_string(deployment_status.status_at) == "2019-09-08 21:56:58Z"
+      assert deployment_status.event_id == event.id
     end
 
     test "handles unknown event types" do
