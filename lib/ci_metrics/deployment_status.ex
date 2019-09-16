@@ -8,7 +8,7 @@ defmodule CiMetrics.Project.DeploymentStatus do
     field :deployment_status_id, :integer
     field :status, :string
     field :status_at, :utc_datetime
-    belongs_to :deployment, Deployment, foreign_key: :deployment_id
+    belongs_to :deployment, Deployment, foreign_key: :deployment_id, references: :deployment_id
     belongs_to :event, Event
 
     timestamps()

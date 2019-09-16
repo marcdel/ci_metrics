@@ -202,6 +202,9 @@ defmodule CiMetrics.ProjectTest do
       assert deployment_status.status == "success"
       assert DateTime.to_string(deployment_status.status_at) == "2019-09-08 21:56:58Z"
       assert deployment_status.event_id == event.id
+
+      [deployment] = Deployment.get_all() |> CiMetrics.Repo.preload(:deployment_statuses)
+      [^deployment_status] = deployment.deployment_statuses
     end
 
     test "handles unknown event types" do
