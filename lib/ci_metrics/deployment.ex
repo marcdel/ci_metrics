@@ -10,7 +10,10 @@ defmodule CiMetrics.Project.Deployment do
     field :started_at, :utc_datetime
     belongs_to :event, Event
     belongs_to :repository, Repository
-    has_many :deployment_statuses, DeploymentStatus, foreign_key: :deployment_id, references: :deployment_id
+
+    has_many :deployment_statuses, DeploymentStatus,
+      foreign_key: :deployment_id,
+      references: :deployment_id
 
     timestamps()
   end
