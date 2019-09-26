@@ -2,12 +2,13 @@ defmodule CiMetrics.Project.Commit do
   use Ecto.Schema
   import Ecto.Changeset
   alias CiMetrics.Repo
-  alias CiMetrics.Project.{Commit, Event, Repository}
+  alias CiMetrics.Project.{Commit, Event, Push, Repository}
 
   schema "commits" do
     field :branch, :string
     field :committed_at, :utc_datetime
     field :sha, :string
+    belongs_to :push, Push
     belongs_to :repository, Repository
     belongs_to :event, Event
 
@@ -27,11 +28,15 @@ defmodule CiMetrics.Project.Commit do
     |> Repo.insert_or_update()
   end
 
-  def from_event(%Event{} = event) do
+  def from_event(%Event{} = event, push_id) do
     event.raw
     |> extract_commit_info()
     |> Enum.map(fn raw_commit ->
-      Map.merge(raw_commit, %{repository_id: event.repository_id, event_id: event.id})
+      Map.merge(raw_commit, %{
+        repository_id: event.repository_id,
+        event_id: event.id,
+        push_id: push_id
+      })
     end)
     |> Enum.map(fn raw_commit -> Commit.insert_or_update(raw_commit) end)
   end
@@ -53,8 +58,8 @@ defmodule CiMetrics.Project.Commit do
 
   def changeset(commit, attrs) do
     commit
-    |> cast(attrs, [:sha, :branch, :committed_at, :repository_id, :event_id])
-    |> validate_required([:sha, :branch, :committed_at, :repository_id, :event_id])
+    |> cast(attrs, [:sha, :branch, :committed_at, :repository_id, :event_id, :push_id])
+    |> validate_required([:sha, :branch, :committed_at, :repository_id, :event_id, :push_id])
     |> foreign_key_constraint(:repository_id)
     |> foreign_key_constraint(:event_id)
     |> unique_constraint(:sha)

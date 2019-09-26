@@ -3,7 +3,7 @@ defmodule CiMetrics.Project do
   import Ecto.Query, only: [where: 2]
 
   alias CiMetrics.{GithubClient, Repo}
-  alias CiMetrics.Project.{Commit, Deployment, DeploymentStatus, Event, Repository}
+  alias CiMetrics.Project.{Commit, Deployment, DeploymentStatus, Event, Push, Repository}
 
   def create_webhook(repository_name, access_token) do
     GithubClient.create_webhook(%{
@@ -30,7 +30,9 @@ defmodule CiMetrics.Project do
 
   @callback process_event(%Event{}) :: %{ok: [Ecto.Schema.t()], error: [Ecto.Changeset.t()]}
   def process_event(%Event{event_type: "push"} = event) do
-    Commit.from_event(event)
+    {:ok, push} = Push.from_event(event)
+
+    Commit.from_event(event, push.id)
     |> Enum.reduce(%{ok: [], error: []}, fn
       {:ok, commit}, result ->
         %{result | ok: [commit | result.ok]}
