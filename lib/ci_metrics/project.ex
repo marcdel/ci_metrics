@@ -3,8 +3,8 @@ defmodule CiMetrics.Project do
   import Ecto.Query, only: [where: 2]
 
   alias CiMetrics.{GithubClient, Repo}
-  alias CiMetrics.Events.{Event, EventProcessor, Push}
-  alias CiMetrics.Project.{Deployment, DeploymentStatus, Repository}
+  alias CiMetrics.Events.{Deployment, Event, EventProcessor, Push}
+  alias CiMetrics.Project.{DeploymentStatus, Repository}
 
   def create_webhook(repository_name, access_token) do
     GithubClient.create_webhook(%{

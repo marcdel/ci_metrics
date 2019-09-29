@@ -1,9 +1,9 @@
 defmodule CiMetrics.ProjectTest do
   use CiMetrics.DataCase, async: true
 
-  alias CiMetrics.Events.Event
+  alias CiMetrics.Events.{Event, Deployment}
   alias CiMetrics.Project
-  alias CiMetrics.Project.{Commit, Deployment, DeploymentStatus, Repository}
+  alias CiMetrics.Project.{Commit, DeploymentStatus, Repository}
 
   describe "create_event/3" do
     test "creates an event with the id, type and raw event" do
