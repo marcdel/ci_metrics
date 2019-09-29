@@ -31,26 +31,15 @@ defmodule CiMetrics.Project do
 
   @callback process_event(%Event{}) :: %{ok: [Ecto.Schema.t()], error: [Ecto.Changeset.t()]}
   def process_event(%Event{event_type: "push"} = event) do
-    event
-    |> cast_event()
-    |> EventProcessor.process()
+    EventProcessor.process(%Push{event: event})
   end
 
   def process_event(%Event{event_type: "deployment"} = event) do
-    event
-    |> cast_event()
-    |> EventProcessor.process()
+    EventProcessor.process(%Deployment{event: event})
   end
 
   def process_event(%Event{event_type: "deployment_status"} = event) do
-    case DeploymentStatus.from_event(event) do
-      {:ok, %DeploymentStatus{} = deployment_status} ->
-        %{ok: [deployment_status], error: []}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        Logger.error("Unable to save deployment_status: #{inspect(changeset)}")
-        %{ok: [], error: [changeset]}
-    end
+    EventProcessor.process(%DeploymentStatus{event: event})
   end
 
   def process_event(%Event{event_type: event_type}) do
@@ -76,12 +65,5 @@ defmodule CiMetrics.Project do
     |> where(repository_id: ^id)
     |> Repo.all()
     |> Repo.preload(:repository)
-  end
-
-  defp cast_event(generic_event) do
-    case generic_event.event_type do
-      "push" -> %Push{event: generic_event}
-      "deployment" -> %Deployment{event: generic_event}
-    end
   end
 end
