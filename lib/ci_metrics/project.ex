@@ -3,7 +3,8 @@ defmodule CiMetrics.Project do
   import Ecto.Query, only: [where: 2]
 
   alias CiMetrics.{GithubClient, Repo}
-  alias CiMetrics.Project.{Commit, Deployment, DeploymentStatus, Event, Push, Repository}
+  alias CiMetrics.Events.{EventProcessor, Push}
+  alias CiMetrics.Project.{Deployment, DeploymentStatus, Event, Repository}
 
   def create_webhook(repository_name, access_token) do
     GithubClient.create_webhook(%{
@@ -30,17 +31,9 @@ defmodule CiMetrics.Project do
 
   @callback process_event(%Event{}) :: %{ok: [Ecto.Schema.t()], error: [Ecto.Changeset.t()]}
   def process_event(%Event{event_type: "push"} = event) do
-    {:ok, push} = Push.from_event(event)
-
-    Commit.from_event(event, push.id)
-    |> Enum.reduce(%{ok: [], error: []}, fn
-      {:ok, commit}, result ->
-        %{result | ok: [commit | result.ok]}
-
-      {:error, changeset}, result ->
-        Logger.error("Unable to save commit: #{inspect(changeset)}")
-        %{result | error: [changeset | result.error]}
-    end)
+    event
+    |> cast_event()
+    |> EventProcessor.process()
   end
 
   def process_event(%Event{event_type: "deployment"} = event) do
@@ -88,5 +81,11 @@ defmodule CiMetrics.Project do
     |> where(repository_id: ^id)
     |> Repo.all()
     |> Repo.preload(:repository)
+  end
+
+  defp cast_event(generic_event) do
+    case generic_event.event_type do
+      "push" -> %Push{event: generic_event}
+    end
   end
 end

@@ -1,7 +1,8 @@
 defmodule CiMetrics.ProjectTest do
   use CiMetrics.DataCase, async: true
+
   alias CiMetrics.Project
-  alias CiMetrics.Project.{Commit, Deployment, Event, Push, Repository}
+  alias CiMetrics.Project.{Commit, Deployment, DeploymentStatus, Event, Repository}
 
   describe "create_event/3" do
     test "creates an event with the id, type and raw event" do
@@ -78,64 +79,15 @@ defmodule CiMetrics.ProjectTest do
   end
 
   describe "process_event/1" do
-    test "push event creates a push record and associates its commits" do
-      event_id = "05b648a1-86cd-4777-bd5c-2e12302d75d3"
-      event_type = "push"
+    test "can process different types of events" do
+      event = CreateEvent.push()
+      %{ok: [%Commit{}], error: []} = Project.process_event(event)
 
-      raw_event =
-        "../support/fixtures/multi_push.json"
-        |> Path.expand(__DIR__)
-        |> File.read!()
-        |> Jason.decode!()
+      event = CreateEvent.deployment()
+      %{ok: [%Deployment{}], error: []} = Project.process_event(event)
 
-      {:ok, event} =
-        Project.create_event(%{
-          event_id: event_id,
-          event_type: event_type,
-          raw_event: raw_event
-        })
-
-      %{ok: _, error: []} = Project.process_event(event)
-      [commit1, commit2] = Commit.get_all()
-      [push] = Push.get_all()
-
-      assert [^commit1, ^commit2] = push.commits
-      assert push.event_id == event.id
-      assert push.repository_id == event.repository_id
-
-      assert commit1.sha == "b5ec9bbdd6a75451e02f9a464fe2418d9eaead81"
-      assert commit1.branch == "master"
-      assert DateTime.to_string(commit1.committed_at) == "2019-09-06 03:26:10Z"
-      assert commit1.event_id == event.id
-      assert commit1.repository_id == event.repository_id
-
-      assert commit2.sha == "8dfe6b686e0bf1a2860b03f6d2e4567002d3fdda"
-      assert commit2.branch == "master"
-      assert DateTime.to_string(commit2.committed_at) == "2019-09-06 03:26:16Z"
-      assert commit1.event_id == event.id
-      assert commit1.repository_id == event.repository_id
-    end
-
-    test "cannot create the same commit twice" do
-      event_id = "05b648a1-86cd-4777-bd5c-2e12302d75d3"
-      event_type = "push"
-
-      raw_event =
-        "../support/fixtures/multi_push.json"
-        |> Path.expand(__DIR__)
-        |> File.read!()
-        |> Jason.decode!()
-
-      {:ok, event} =
-        Project.create_event(%{
-          event_id: event_id,
-          event_type: event_type,
-          raw_event: raw_event
-        })
-
-      assert %{ok: [commit1, commit2], error: []} = Project.process_event(event)
-      assert %{ok: [^commit1, ^commit2], error: []} = Project.process_event(event)
-      assert Commit.get_all() |> Enum.count() == 2
+      event = CreateEvent.deployment_status()
+      %{ok: [%DeploymentStatus{}], error: []} = Project.process_event(event)
     end
 
     test "can process deployment events" do
