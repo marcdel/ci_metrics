@@ -2,7 +2,7 @@ defimpl CiMetrics.Events.EventProcessor, for: CiMetrics.Events.Push do
   require Logger
 
   alias CiMetrics.Events.{Push}
-  alias CiMetrics.Project.{Commit}
+  alias CiMetrics.Project.Commit
 
   def process(%Push{event: event}) do
     {:ok, push} = push_from_event(event)
