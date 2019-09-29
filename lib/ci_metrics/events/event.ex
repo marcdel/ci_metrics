@@ -1,10 +1,10 @@
-defmodule CiMetrics.Project.Event do
+defmodule CiMetrics.Events.Event do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query, only: [order_by: 2]
 
   alias CiMetrics.Repo
-  alias CiMetrics.Project.Event
+  alias CiMetrics.Events.Event
 
   schema "events" do
     field :raw, :map

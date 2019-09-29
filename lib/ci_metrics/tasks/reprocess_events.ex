@@ -5,7 +5,7 @@ defmodule Mix.Tasks.ReprocessEvents do
   def run(_) do
     Mix.Task.run("app.start")
 
-    CiMetrics.Project.Event.get_all()
+    CiMetrics.Events.Event.get_all()
     |> Enum.map(&CiMetrics.Project.process_event/1)
   end
 end

@@ -1,7 +1,7 @@
 defmodule CiMetricsWeb.EventController do
   use CiMetricsWeb, :controller
   alias CiMetrics.Project
-  alias CiMetrics.Project.Event
+  alias CiMetrics.Events.Event
 
   @project Application.get_env(:ci_metrics, :project, Project)
 

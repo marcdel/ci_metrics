@@ -4,7 +4,8 @@ defmodule CiMetrics.Events.Push do
 
   alias CiMetrics.Repo
   alias CiMetrics.Events.{Push}
-  alias CiMetrics.Project.{Commit, Event, Repository}
+  alias CiMetrics.Events.Event
+  alias CiMetrics.Project.{Commit, Repository}
 
   schema "pushes" do
     field :branch, :string

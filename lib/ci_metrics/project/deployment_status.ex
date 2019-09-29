@@ -2,7 +2,8 @@ defmodule CiMetrics.Project.DeploymentStatus do
   use Ecto.Schema
   import Ecto.Changeset
   alias CiMetrics.Repo
-  alias CiMetrics.Project.{Event, Deployment, DeploymentStatus}
+  alias CiMetrics.Events.Event
+  alias CiMetrics.Project.{Deployment, DeploymentStatus}
 
   schema "deployment_statuses" do
     field :deployment_status_id, :integer

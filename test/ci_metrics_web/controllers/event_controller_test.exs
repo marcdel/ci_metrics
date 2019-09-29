@@ -2,8 +2,9 @@ defmodule CiMetricsWeb.EventControllerTest do
   import Mox
   use CiMetricsWeb.ConnCase, async: true
 
+  alias CiMetrics.Events.Event
   alias CiMetrics.Project
-  alias CiMetrics.Project.{Commit, Event, Repository}
+  alias CiMetrics.Project.{Commit, Repository}
 
   setup :verify_on_exit!
   @json_payload "../../support/push.json" |> Path.expand(__DIR__) |> File.read!()
@@ -47,7 +48,7 @@ defmodule CiMetricsWeb.EventControllerTest do
                 {"has already been taken",
                  [constraint: :unique, constraint_name: "events_event_id_index"]}
             ],
-            data: %CiMetrics.Project.Event{},
+            data: %Event{},
             valid?: false
           }
         }

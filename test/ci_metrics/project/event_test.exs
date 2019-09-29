@@ -1,7 +1,8 @@
-defmodule CiMetrics.Project.EventTest do
+defmodule CiMetrics.Events.EventTest do
   use CiMetrics.DataCase, async: true
+  alias CiMetrics.Events.Event
   alias CiMetrics.Project
-  alias CiMetrics.Project.{Event, Repository}
+  alias CiMetrics.Project.{Repository}
 
   test "get_all is ordered by repository id desc then by id desc" do
     Repository.insert_or_update(%{owner: "owner1", name: "repo1"})

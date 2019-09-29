@@ -2,8 +2,8 @@ defmodule CiMetrics.Project.Commit do
   use Ecto.Schema
   import Ecto.Changeset
   alias CiMetrics.Repo
-  alias CiMetrics.Events.{Push}
-  alias CiMetrics.Project.{Commit, Event, Repository}
+  alias CiMetrics.Events.{Event, Push}
+  alias CiMetrics.Project.{Commit, Repository}
 
   schema "commits" do
     field :branch, :string
