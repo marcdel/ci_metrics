@@ -32,24 +32,6 @@ defmodule CiMetrics.Events.Deployment do
     |> Repo.insert_or_update()
   end
 
-  def from_event(%Event{} = event) do
-    event.raw
-    |> extract_deployment_info()
-    |> Map.merge(%{repository_id: event.repository_id, event_id: event.id})
-    |> Deployment.insert_or_update()
-  end
-
-  defp extract_deployment_info(raw_event) do
-    deployment = raw_event["deployment"]
-    {:ok, started_at, _offset_in_seconds} = DateTime.from_iso8601(deployment["created_at"])
-
-    %{
-      deployment_id: deployment["id"],
-      sha: deployment["sha"],
-      started_at: started_at
-    }
-  end
-
   @doc false
   def changeset(deployment, attrs) do
     deployment

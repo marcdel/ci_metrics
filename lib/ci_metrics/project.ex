@@ -37,14 +37,9 @@ defmodule CiMetrics.Project do
   end
 
   def process_event(%Event{event_type: "deployment"} = event) do
-    case Deployment.from_event(event) do
-      {:ok, %Deployment{} = deployment} ->
-        %{ok: [deployment], error: []}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        Logger.error("Unable to save deployment: #{inspect(changeset)}")
-        %{ok: [], error: [changeset]}
-    end
+    event
+    |> cast_event()
+    |> EventProcessor.process()
   end
 
   def process_event(%Event{event_type: "deployment_status"} = event) do
@@ -86,6 +81,7 @@ defmodule CiMetrics.Project do
   defp cast_event(generic_event) do
     case generic_event.event_type do
       "push" -> %Push{event: generic_event}
+      "deployment" -> %Deployment{event: generic_event}
     end
   end
 end
