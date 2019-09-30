@@ -3,7 +3,7 @@ defmodule CiMetricsWeb.EventControllerTest do
   use CiMetricsWeb.ConnCase, async: true
 
   alias CiMetrics.Events.Event
-  alias CiMetrics.Project
+  alias CiMetrics.GithubProject
   alias CiMetrics.Project.{Commit, Repository}
 
   setup :verify_on_exit!
@@ -110,7 +110,7 @@ defmodule CiMetricsWeb.EventControllerTest do
 
   test "GET /events", %{conn: conn} do
     {:ok, _} =
-      Project.create_event(%{
+      GithubProject.create_event(%{
         event_id: "05b648a1-86cd-4777-bd5c-2e12302d75d3",
         event_type: "push",
         raw_event: %{
@@ -164,7 +164,7 @@ defmodule CiMetricsWeb.EventControllerTest do
   end
 
   test "GET /events/:id", %{conn: conn} do
-    Project.create_event(%{
+    GithubProject.create_event(%{
       event_id: "05b648a1-86cd-4777-bd5c-2e12302d75d3",
       event_type: "push",
       raw_event: %{

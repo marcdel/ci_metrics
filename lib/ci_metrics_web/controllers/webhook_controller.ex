@@ -1,13 +1,13 @@
 defmodule CiMetricsWeb.WebhookController do
   use CiMetricsWeb, :controller
-  alias CiMetrics.Project
+  alias CiMetrics.GithubProject
 
   def new(conn, _params) do
     render(conn, "new.html")
   end
 
   def create(conn, %{"repository_name" => repository_name, "access_token" => access_token}) do
-    case Project.create_webhook(repository_name, access_token) do
+    case GithubProject.create_webhook(repository_name, access_token) do
       {:ok, _} ->
         conn
         |> put_flash(:info, "Webhook created.")

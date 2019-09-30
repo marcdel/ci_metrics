@@ -1,5 +1,5 @@
 defmodule CreateEvent do
-  alias CiMetrics.Project
+  alias CiMetrics.GithubProject
 
   def push do
     raw_event =
@@ -9,7 +9,7 @@ defmodule CreateEvent do
       |> Jason.decode!()
 
     {:ok, event} =
-      Project.create_event(%{
+      GithubProject.create_event(%{
         event_id: Ecto.UUID.generate(),
         event_type: "push",
         raw_event: raw_event
@@ -26,7 +26,7 @@ defmodule CreateEvent do
       |> Jason.decode!()
 
     {:ok, event} =
-      Project.create_event(%{
+      GithubProject.create_event(%{
         event_id: Ecto.UUID.generate(),
         event_type: "push",
         raw_event: raw_event
@@ -43,7 +43,7 @@ defmodule CreateEvent do
       |> Jason.decode!()
 
     {:ok, event} =
-      Project.create_event(%{
+      GithubProject.create_event(%{
         event_id: Ecto.UUID.generate(),
         event_type: "deployment",
         raw_event: raw_event
@@ -60,7 +60,7 @@ defmodule CreateEvent do
       |> Jason.decode!()
 
     {:ok, event} =
-      Project.create_event(%{
+      GithubProject.create_event(%{
         event_id: Ecto.UUID.generate(),
         event_type: "deployment_status",
         raw_event: raw_event

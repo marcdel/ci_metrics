@@ -1,7 +1,7 @@
 defimpl CiMetrics.Events.EventProcessor, for: CiMetrics.Events.DeploymentStatus do
   require Logger
 
-  alias CiMetrics.Events.{DeploymentStatus, Event}
+  alias CiMetrics.Events.DeploymentStatus
 
   def process(%DeploymentStatus{event: event}) do
     case DeploymentStatus.from_event(event) do

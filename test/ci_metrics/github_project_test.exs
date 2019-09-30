@@ -1,8 +1,8 @@
-defmodule CiMetrics.ProjectTest do
+defmodule CiMetrics.GithubProjectTest do
   use CiMetrics.DataCase, async: true
 
   alias CiMetrics.Events.{Event, Deployment, DeploymentStatus}
-  alias CiMetrics.Project
+  alias CiMetrics.GithubProject
   alias CiMetrics.Project.{Commit, Repository}
 
   describe "create_event/3" do
@@ -16,7 +16,7 @@ defmodule CiMetrics.ProjectTest do
         |> File.read!()
         |> Jason.decode!()
 
-      Project.create_event(%{
+      GithubProject.create_event(%{
         event_id: event_id,
         event_type: event_type,
         raw_event: raw_event
@@ -38,7 +38,7 @@ defmodule CiMetrics.ProjectTest do
         |> File.read!()
         |> Jason.decode!()
 
-      Project.create_event(%{
+      GithubProject.create_event(%{
         event_id: event_id,
         event_type: event_type,
         raw_event: raw_event
@@ -62,14 +62,14 @@ defmodule CiMetrics.ProjectTest do
         |> Jason.decode!()
 
       assert {:ok, event} =
-               Project.create_event(%{
+               GithubProject.create_event(%{
                  event_id: "same-event-id",
                  event_type: event_type,
                  raw_event: raw_event
                })
 
       assert {:ok, ^event} =
-               Project.create_event(%{
+               GithubProject.create_event(%{
                  event_id: "same-event-id",
                  event_type: event_type,
                  raw_event: raw_event
@@ -82,13 +82,13 @@ defmodule CiMetrics.ProjectTest do
   describe "process_event/1" do
     test "can process different types of events" do
       event = CreateEvent.push()
-      %{ok: [%Commit{}], error: []} = Project.process_event(event)
+      %{ok: [%Commit{}], error: []} = GithubProject.process_event(event)
 
       event = CreateEvent.deployment()
-      %{ok: [%Deployment{}], error: []} = Project.process_event(event)
+      %{ok: [%Deployment{}], error: []} = GithubProject.process_event(event)
 
       event = CreateEvent.deployment_status()
-      %{ok: [%DeploymentStatus{}], error: []} = Project.process_event(event)
+      %{ok: [%DeploymentStatus{}], error: []} = GithubProject.process_event(event)
     end
 
     test "handles unknown event types" do
@@ -99,13 +99,13 @@ defmodule CiMetrics.ProjectTest do
         |> Jason.decode!()
 
       {:ok, event} =
-        Project.create_event(%{
+        GithubProject.create_event(%{
           event_id: "asdasd",
           event_type: "unknown_type",
           raw_event: raw_event
         })
 
-      assert %{ok: [], error: []} = Project.process_event(event)
+      assert %{ok: [], error: []} = GithubProject.process_event(event)
     end
   end
 
@@ -113,36 +113,36 @@ defmodule CiMetrics.ProjectTest do
     {:ok, repo1} = Repository.insert_or_update(%{owner: "owner1", name: "repo1"})
     {:ok, repo2} = Repository.insert_or_update(%{owner: "owner2", name: "repo2"})
 
-    Project.create_event(%{
+    GithubProject.create_event(%{
       event_id: "event1",
       event_type: "push",
       raw_event: %{"repository" => %{"full_name" => "owner1/repo1"}}
     })
 
-    Project.create_event(%{
+    GithubProject.create_event(%{
       event_id: "event2",
       event_type: "push",
       raw_event: %{"repository" => %{"full_name" => "owner2/repo2"}}
     })
 
-    Project.create_event(%{
+    GithubProject.create_event(%{
       event_id: "event3",
       event_type: "push",
       raw_event: %{"repository" => %{"full_name" => "owner2/repo2"}}
     })
 
-    Project.create_event(%{
+    GithubProject.create_event(%{
       event_id: "event4",
       event_type: "push",
       raw_event: %{"repository" => %{"full_name" => "owner1/repo1"}}
     })
 
     assert ["event1", "event4"] ==
-             Project.get_events_for(%{repository_id: repo1.id})
+             GithubProject.get_events_for(%{repository_id: repo1.id})
              |> get_event_ids()
 
     assert ["event2", "event3"] ==
-             Project.get_events_for(%{repository_id: Integer.to_string(repo2.id)})
+             GithubProject.get_events_for(%{repository_id: Integer.to_string(repo2.id)})
              |> get_event_ids()
   end
 
