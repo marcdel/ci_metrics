@@ -142,9 +142,8 @@ defmodule CiMetrics.GithubProjectTest do
     CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_4.json")
 
     result = GithubProject.pushes_by_deployment(%{repository_id: repository_id})
-
-    assert Map.get(result, deployment_1_sha) |> Enum.count() == 2
-    assert Map.get(result, deployment_2_sha) |> Enum.count() == 1
+    assert Map.get(result, deployment_1_sha, []) |> Enum.count() == 2
+    assert Map.get(result, deployment_2_sha, []) |> Enum.count() == 1
   end
 
   test "get_events_for/1" do

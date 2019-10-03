@@ -9,6 +9,30 @@ defmodule CiMetrics.GithubProject do
   alias CiMetrics.Project.Repository
 
   def pushes_by_deployment(%{repository_id: repository_id}) do
+    deployments_by_sha = deployments_by_sha(repository_id)
+
+    pushes =
+      Push
+      |> where(repository_id: ^repository_id)
+      |> order_by(asc: :id)
+      |> Repo.all()
+
+    pushes_by_before_sha =
+      Enum.reduce(pushes, %{}, fn push, map ->
+        Map.put(map, push.before_sha, push)
+      end)
+
+    add_pushes_to_deployments(%{
+      push: hd(pushes),
+      repository_id: repository_id,
+      deployments_by_sha: deployments_by_sha,
+      pushes_by_before_sha: pushes_by_before_sha,
+      accumulator: %{current_pushes: [], all_pushes: %{}}
+    })
+    |> Map.get(:all_pushes)
+  end
+
+  defp deployments_by_sha(repository_id) do
     deployments_query =
       from deployment in Deployment,
         join: status in DeploymentStatus,
@@ -23,76 +47,42 @@ defmodule CiMetrics.GithubProject do
       deployments_query
       |> Repo.all()
 
-    deployments_by_sha =
-      Enum.reduce(deployments, %{}, fn deployment, map ->
-        Map.put(map, deployment.sha, deployment)
-      end)
-
-    pushes =
-      Push
-      |> where(repository_id: ^repository_id)
-      |> order_by(desc: :id)
-      |> Repo.all()
-
-    pushes_by_after_sha =
-      Enum.reduce(pushes, %{}, fn push, map ->
-        Map.put(map, push.after_sha, push)
-      end)
-
-    pushes_by_before_sha =
-      Enum.reduce(pushes, %{}, fn push, map ->
-        Map.put(map, push.before_sha, push)
-      end)
-
-    pushes
-    |> Enum.filter(fn push -> !Map.has_key?(pushes_by_after_sha, push.before_sha) end)
-    |> Enum.reduce(
-      %{current_pushes: [], all_pushes: %{}},
-      fn first_push, %{current_pushes: current_pushes, all_pushes: all_pushes} ->
-        handle_push(first_push, repository_id, deployments_by_sha, %{
-          current_pushes: current_pushes,
-          all_pushes: all_pushes
-        })
-      end
-    )
-    |> Map.get(:all_pushes)
+    Enum.reduce(deployments, %{}, fn deployment, map ->
+      Map.put(map, deployment.sha, deployment)
+    end)
   end
 
-  defp handle_push(nil, _, _, %{current_pushes: current_pushes, all_pushes: all_pushes}) do
-    %{current_pushes: current_pushes, all_pushes: all_pushes}
-  end
+  defp add_pushes_to_deployments(%{push: nil, accumulator: accumulator}), do: accumulator
 
-  defp handle_push(push, repository_id, deployments_by_sha, %{
-         current_pushes: current_pushes,
-         all_pushes: all_pushes
+  defp add_pushes_to_deployments(%{
+         push: push,
+         repository_id: repository_id,
+         pushes_by_before_sha: pushes_by_before_sha,
+         deployments_by_sha: deployments_by_sha,
+         accumulator: %{
+           current_pushes: current_pushes,
+           all_pushes: all_pushes
+         }
        }) do
     current_pushes = current_pushes ++ [push]
     deployment = Map.get(deployments_by_sha, push.after_sha)
+    next_push = Map.get(pushes_by_before_sha, push.after_sha)
 
-    pushes =
-      Push
-      |> where(repository_id: ^repository_id)
-      |> order_by(desc: :id)
-      |> Repo.all()
+    updated_accumulator =
+      if deployment != nil do
+        # We hit a new deployment so that's all the pushes for the current deployment
+        %{current_pushes: [], all_pushes: Map.put(all_pushes, deployment.sha, current_pushes)}
+      else
+        %{current_pushes: current_pushes, all_pushes: all_pushes}
+      end
 
-    pushes_by_before_sha =
-      Enum.reduce(pushes, %{}, fn push, map ->
-        Map.put(map, push.before_sha, push)
-      end)
-
-    push = Map.get(pushes_by_before_sha, push.after_sha)
-
-    if deployment != nil do
-      handle_push(push, repository_id, deployments_by_sha, %{
-        current_pushes: [],
-        all_pushes: Map.put(all_pushes, deployment.sha, current_pushes)
-      })
-    else
-      handle_push(push, repository_id, deployments_by_sha, %{
-        current_pushes: current_pushes,
-        all_pushes: all_pushes
-      })
-    end
+    add_pushes_to_deployments(%{
+      push: next_push,
+      repository_id: repository_id,
+      pushes_by_before_sha: pushes_by_before_sha,
+      deployments_by_sha: deployments_by_sha,
+      accumulator: updated_accumulator
+    })
   end
 
   def create_webhook(repository_name, access_token) do
