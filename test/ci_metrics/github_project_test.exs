@@ -109,6 +109,44 @@ defmodule CiMetrics.GithubProjectTest do
     end
   end
 
+  test "pushes_by_deployment/1" do
+    %{ok: [%{repository_id: repository_id}, _], error: []} =
+      CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_1.json")
+
+    CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_2.json")
+
+    %{ok: [%{sha: deployment_1_sha}], error: []} =
+      CreateEvent.create_and_process(
+        "deployment",
+        "../support/fixtures/full_flow/deployment_1.json"
+      )
+
+    CreateEvent.create_and_process(
+      "deployment_status",
+      "../support/fixtures/full_flow/deployment_1_status.json"
+    )
+
+    CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_3.json")
+
+    %{ok: [%{sha: deployment_2_sha}], error: []} =
+      CreateEvent.create_and_process(
+        "deployment",
+        "../support/fixtures/full_flow/deployment_2.json"
+      )
+
+    CreateEvent.create_and_process(
+      "deployment_status",
+      "../support/fixtures/full_flow/deployment_2_status.json"
+    )
+
+    CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_4.json")
+
+    result = GithubProject.pushes_by_deployment(%{repository_id: repository_id})
+
+    assert Map.get(result, deployment_1_sha) |> Enum.count() == 2
+    assert Map.get(result, deployment_2_sha) |> Enum.count() == 1
+  end
+
   test "get_events_for/1" do
     {:ok, repo1} = Repository.insert_or_update(%{owner: "owner1", name: "repo1"})
     {:ok, repo2} = Repository.insert_or_update(%{owner: "owner2", name: "repo2"})
