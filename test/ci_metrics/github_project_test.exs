@@ -146,6 +146,20 @@ defmodule CiMetrics.GithubProjectTest do
     assert Map.get(result, deployment_2_sha, []) |> Enum.count() == 1
   end
 
+  test "handle gaps in push events" do
+    CreateEvent.create_and_process2("push", %{"before" => "asd", "after" => "1"})
+    CreateEvent.create_and_process2("push", %{"before" => "1", "after" => "2"})
+    #    CreateEvent.create_and_process2("push", %{"before" => "2", "after" => "3"})
+    CreateEvent.create_and_process2("push", %{"before" => "3", "after" => "4"})
+    CreateEvent.create_and_process2("deployment", %{"deployment" => %{"sha" => "4"}})
+    CreateEvent.create_and_process2("deployment_status", %{"deployment" => %{"sha" => "4"}})
+
+    [%{id: repository_id}] = Repository.get_all()
+
+    result = GithubProject.pushes_by_deployment(%{repository_id: repository_id})
+    assert Map.get(result, "4", []) |> Enum.count() == 3
+  end
+
   test "get_events_for/1" do
     {:ok, repo1} = Repository.insert_or_update(%{owner: "owner1", name: "repo1"})
     {:ok, repo2} = Repository.insert_or_update(%{owner: "owner2", name: "repo2"})

@@ -22,13 +22,16 @@ defmodule CiMetrics.GithubProject do
         Map.put(map, push.before_sha, push)
       end)
 
-    add_pushes_to_deployments(%{
-      push: hd(pushes),
-      repository_id: repository_id,
-      deployments_by_sha: deployments_by_sha,
-      pushes_by_before_sha: pushes_by_before_sha,
-      accumulator: %{current_pushes: [], all_pushes: %{}}
-    })
+    pushes
+    |> Enum.reduce(%{current_pushes: [], all_pushes: %{}}, fn push, accumulator ->
+      add_pushes_to_deployments(%{
+        push: push,
+        repository_id: repository_id,
+        deployments_by_sha: deployments_by_sha,
+        pushes_by_before_sha: pushes_by_before_sha,
+        accumulator: accumulator
+      })
+    end)
     |> Map.get(:all_pushes)
   end
 
@@ -56,8 +59,6 @@ defmodule CiMetrics.GithubProject do
 
   defp add_pushes_to_deployments(%{
          push: push,
-         repository_id: repository_id,
-         pushes_by_before_sha: pushes_by_before_sha,
          deployments_by_sha: deployments_by_sha,
          accumulator: %{
            current_pushes: current_pushes,
@@ -66,23 +67,13 @@ defmodule CiMetrics.GithubProject do
        }) do
     current_pushes = current_pushes ++ [push]
     deployment = Map.get(deployments_by_sha, push.after_sha)
-    next_push = Map.get(pushes_by_before_sha, push.after_sha)
 
-    updated_accumulator =
-      if deployment != nil do
-        # We hit a new deployment so that's all the pushes for the current deployment
-        %{current_pushes: [], all_pushes: Map.put(all_pushes, deployment.sha, current_pushes)}
-      else
-        %{current_pushes: current_pushes, all_pushes: all_pushes}
-      end
-
-    add_pushes_to_deployments(%{
-      push: next_push,
-      repository_id: repository_id,
-      pushes_by_before_sha: pushes_by_before_sha,
-      deployments_by_sha: deployments_by_sha,
-      accumulator: updated_accumulator
-    })
+    if deployment != nil do
+      # We found a deployment so all the pushes since the last deployment get associated with it
+      %{current_pushes: [], all_pushes: Map.put(all_pushes, deployment.sha, current_pushes)}
+    else
+      %{current_pushes: current_pushes, all_pushes: all_pushes}
+    end
   end
 
   def create_webhook(repository_name, access_token) do
