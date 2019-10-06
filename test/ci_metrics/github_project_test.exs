@@ -81,13 +81,13 @@ defmodule CiMetrics.GithubProjectTest do
 
   describe "process_event/1" do
     test "can process different types of events" do
-      event = CreateEvent.push()
+      event = CreateEvent.create("push")
       %{ok: [%Commit{}], error: []} = GithubProject.process_event(event)
 
-      event = CreateEvent.deployment()
+      event = CreateEvent.create("deployment")
       %{ok: [%Deployment{}], error: []} = GithubProject.process_event(event)
 
-      event = CreateEvent.deployment_status()
+      event = CreateEvent.create("deployment_status")
       %{ok: [%DeploymentStatus{}], error: []} = GithubProject.process_event(event)
     end
 
@@ -111,17 +111,25 @@ defmodule CiMetrics.GithubProjectTest do
 
   describe "pushes_by_deployment/1" do
     test "associates pushes with the following deploy" do
-      CreateEvent.create_and_process2("push", %{"before" => "", "after" => "1"})
-      CreateEvent.create_and_process2("push", %{"before" => "1", "after" => "2"})
-      CreateEvent.create_and_process2("push", %{"before" => "3", "after" => "4"})
-      CreateEvent.create_and_process2("deployment", %{"deployment" => %{"id" => 1, "sha" => "4"}})
-      CreateEvent.create_and_process2("deployment_status", %{"deployment_status" => %{"id" => 1}, "deployment" => %{"id" => 1, "sha" => "4"}})
+      CreateEvent.create_and_process("push", %{"before" => "", "after" => "1"})
+      CreateEvent.create_and_process("push", %{"before" => "1", "after" => "2"})
+      CreateEvent.create_and_process("push", %{"before" => "3", "after" => "4"})
+      CreateEvent.create_and_process("deployment", %{"deployment" => %{"id" => 1, "sha" => "4"}})
 
-      CreateEvent.create_and_process2("push", %{"before" => "4", "after" => "5"})
-      CreateEvent.create_and_process2("push", %{"before" => "5", "after" => "6"})
-      CreateEvent.create_and_process2("push", %{"before" => "6", "after" => "7"})
-      CreateEvent.create_and_process2("deployment", %{"deployment" => %{"id" => 2, "sha" => "7"}})
-      CreateEvent.create_and_process2("deployment_status", %{"deployment_status" => %{"id" => 2}, "deployment" => %{"id" => 2, "sha" => "7"}})
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{"id" => 1},
+        "deployment" => %{"id" => 1, "sha" => "4"}
+      })
+
+      CreateEvent.create_and_process("push", %{"before" => "4", "after" => "5"})
+      CreateEvent.create_and_process("push", %{"before" => "5", "after" => "6"})
+      CreateEvent.create_and_process("push", %{"before" => "6", "after" => "7"})
+      CreateEvent.create_and_process("deployment", %{"deployment" => %{"id" => 2, "sha" => "7"}})
+
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{"id" => 2},
+        "deployment" => %{"id" => 2, "sha" => "7"}
+      })
 
       [%{id: repository_id}] = Repository.get_all()
 
@@ -131,11 +139,11 @@ defmodule CiMetrics.GithubProjectTest do
     end
 
     test "handle gaps in push events" do
-      CreateEvent.create_and_process2("push", %{"before" => "", "after" => "1"})
-      CreateEvent.create_and_process2("push", %{"before" => "1", "after" => "2"})
-      CreateEvent.create_and_process2("push", %{"before" => "3", "after" => "4"})
-      CreateEvent.create_and_process2("deployment", %{"deployment" => %{"sha" => "4"}})
-      CreateEvent.create_and_process2("deployment_status", %{"deployment" => %{"sha" => "4"}})
+      CreateEvent.create_and_process("push", %{"before" => "", "after" => "1"})
+      CreateEvent.create_and_process("push", %{"before" => "1", "after" => "2"})
+      CreateEvent.create_and_process("push", %{"before" => "3", "after" => "4"})
+      CreateEvent.create_and_process("deployment", %{"deployment" => %{"sha" => "4"}})
+      CreateEvent.create_and_process("deployment_status", %{"deployment" => %{"sha" => "4"}})
 
       [%{id: repository_id}] = Repository.get_all()
 
@@ -144,9 +152,9 @@ defmodule CiMetrics.GithubProjectTest do
     end
 
     test "handle first push" do
-      CreateEvent.create_and_process2("push", %{"before" => "", "after" => "1"})
-      CreateEvent.create_and_process2("deployment", %{"deployment" => %{"sha" => "1"}})
-      CreateEvent.create_and_process2("deployment_status", %{"deployment" => %{"sha" => "1"}})
+      CreateEvent.create_and_process("push", %{"before" => "", "after" => "1"})
+      CreateEvent.create_and_process("deployment", %{"deployment" => %{"sha" => "1"}})
+      CreateEvent.create_and_process("deployment_status", %{"deployment" => %{"sha" => "1"}})
 
       [%{id: repository_id}] = Repository.get_all()
 
