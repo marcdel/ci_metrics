@@ -109,55 +109,50 @@ defmodule CiMetrics.GithubProjectTest do
     end
   end
 
-  test "pushes_by_deployment/1" do
-    %{ok: [%{repository_id: repository_id}, _], error: []} =
-      CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_1.json")
+  describe "pushes_by_deployment/1" do
+    test "associates pushes with the following deploy" do
+      CreateEvent.create_and_process2("push", %{"before" => "", "after" => "1"})
+      CreateEvent.create_and_process2("push", %{"before" => "1", "after" => "2"})
+      CreateEvent.create_and_process2("push", %{"before" => "3", "after" => "4"})
+      CreateEvent.create_and_process2("deployment", %{"deployment" => %{"id" => 1, "sha" => "4"}})
+      CreateEvent.create_and_process2("deployment_status", %{"deployment_status" => %{"id" => 1}, "deployment" => %{"id" => 1, "sha" => "4"}})
 
-    CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_2.json")
+      CreateEvent.create_and_process2("push", %{"before" => "4", "after" => "5"})
+      CreateEvent.create_and_process2("push", %{"before" => "5", "after" => "6"})
+      CreateEvent.create_and_process2("push", %{"before" => "6", "after" => "7"})
+      CreateEvent.create_and_process2("deployment", %{"deployment" => %{"id" => 2, "sha" => "7"}})
+      CreateEvent.create_and_process2("deployment_status", %{"deployment_status" => %{"id" => 2}, "deployment" => %{"id" => 2, "sha" => "7"}})
 
-    %{ok: [%{sha: deployment_1_sha}], error: []} =
-      CreateEvent.create_and_process(
-        "deployment",
-        "../support/fixtures/full_flow/deployment_1.json"
-      )
+      [%{id: repository_id}] = Repository.get_all()
 
-    CreateEvent.create_and_process(
-      "deployment_status",
-      "../support/fixtures/full_flow/deployment_1_status.json"
-    )
+      result = GithubProject.pushes_by_deployment(%{repository_id: repository_id})
+      assert Map.get(result, "4", []) |> Enum.count() == 3
+      assert Map.get(result, "7", []) |> Enum.count() == 3
+    end
 
-    CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_3.json")
+    test "handle gaps in push events" do
+      CreateEvent.create_and_process2("push", %{"before" => "", "after" => "1"})
+      CreateEvent.create_and_process2("push", %{"before" => "1", "after" => "2"})
+      CreateEvent.create_and_process2("push", %{"before" => "3", "after" => "4"})
+      CreateEvent.create_and_process2("deployment", %{"deployment" => %{"sha" => "4"}})
+      CreateEvent.create_and_process2("deployment_status", %{"deployment" => %{"sha" => "4"}})
 
-    %{ok: [%{sha: deployment_2_sha}], error: []} =
-      CreateEvent.create_and_process(
-        "deployment",
-        "../support/fixtures/full_flow/deployment_2.json"
-      )
+      [%{id: repository_id}] = Repository.get_all()
 
-    CreateEvent.create_and_process(
-      "deployment_status",
-      "../support/fixtures/full_flow/deployment_2_status.json"
-    )
+      result = GithubProject.pushes_by_deployment(%{repository_id: repository_id})
+      assert Map.get(result, "4", []) |> Enum.count() == 3
+    end
 
-    CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_4.json")
+    test "handle first push" do
+      CreateEvent.create_and_process2("push", %{"before" => "", "after" => "1"})
+      CreateEvent.create_and_process2("deployment", %{"deployment" => %{"sha" => "1"}})
+      CreateEvent.create_and_process2("deployment_status", %{"deployment" => %{"sha" => "1"}})
 
-    result = GithubProject.pushes_by_deployment(%{repository_id: repository_id})
-    assert Map.get(result, deployment_1_sha, []) |> Enum.count() == 2
-    assert Map.get(result, deployment_2_sha, []) |> Enum.count() == 1
-  end
+      [%{id: repository_id}] = Repository.get_all()
 
-  test "handle gaps in push events" do
-    CreateEvent.create_and_process2("push", %{"before" => "asd", "after" => "1"})
-    CreateEvent.create_and_process2("push", %{"before" => "1", "after" => "2"})
-    #    CreateEvent.create_and_process2("push", %{"before" => "2", "after" => "3"})
-    CreateEvent.create_and_process2("push", %{"before" => "3", "after" => "4"})
-    CreateEvent.create_and_process2("deployment", %{"deployment" => %{"sha" => "4"}})
-    CreateEvent.create_and_process2("deployment_status", %{"deployment" => %{"sha" => "4"}})
-
-    [%{id: repository_id}] = Repository.get_all()
-
-    result = GithubProject.pushes_by_deployment(%{repository_id: repository_id})
-    assert Map.get(result, "4", []) |> Enum.count() == 3
+      result = GithubProject.pushes_by_deployment(%{repository_id: repository_id})
+      assert Map.get(result, "1", []) |> Enum.count() == 1
+    end
   end
 
   test "get_events_for/1" do
