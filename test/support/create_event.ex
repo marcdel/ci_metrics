@@ -19,12 +19,13 @@ defmodule CreateEvent do
           %{"full_name" => "group/repository"},
           Map.get(params, "repository", %{})
         ),
-      "commits" => [
-        %{
-          "id" => Ecto.UUID.generate(),
-          "timestamp" => "2019-09-06 03:26:10Z"
-        }
-      ]
+      "commits" =>
+        Map.get(params, "commits", [
+          %{
+            "id" => Ecto.UUID.generate(),
+            "timestamp" => "2019-09-06 03:26:10Z"
+          }
+        ])
     }
 
     {:ok, event} =
