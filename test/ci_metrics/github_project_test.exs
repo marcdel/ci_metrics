@@ -81,13 +81,13 @@ defmodule CiMetrics.GithubProjectTest do
 
   describe "process_event/1" do
     test "can process different types of events" do
-      event = CreateEvent.push()
+      event = CreateEvent.create("push")
       %{ok: [%Commit{}], error: []} = GithubProject.process_event(event)
 
-      event = CreateEvent.deployment()
+      event = CreateEvent.create("deployment")
       %{ok: [%Deployment{}], error: []} = GithubProject.process_event(event)
 
-      event = CreateEvent.deployment_status()
+      event = CreateEvent.create("deployment_status")
       %{ok: [%DeploymentStatus{}], error: []} = GithubProject.process_event(event)
     end
 
@@ -109,55 +109,242 @@ defmodule CiMetrics.GithubProjectTest do
     end
   end
 
-  test "pushes_by_deployment/1" do
-    %{ok: [%{repository_id: repository_id}, _], error: []} =
-      CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_1.json")
+  describe "pushes_by_deployment/1" do
+    test "associates pushes with the following deploy" do
+      CreateEvent.create_and_process("push", %{"before" => "", "after" => "1"})
+      CreateEvent.create_and_process("push", %{"before" => "1", "after" => "2"})
+      CreateEvent.create_and_process("push", %{"before" => "3", "after" => "4"})
+      CreateEvent.create_and_process("deployment", %{"deployment" => %{"id" => 1, "sha" => "4"}})
 
-    CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_2.json")
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{"id" => 1},
+        "deployment" => %{"id" => 1, "sha" => "4"}
+      })
 
-    %{ok: [%{sha: deployment_1_sha}], error: []} =
-      CreateEvent.create_and_process(
-        "deployment",
-        "../support/fixtures/full_flow/deployment_1.json"
-      )
+      CreateEvent.create_and_process("push", %{"before" => "4", "after" => "5"})
+      CreateEvent.create_and_process("push", %{"before" => "5", "after" => "6"})
+      CreateEvent.create_and_process("push", %{"before" => "6", "after" => "7"})
+      CreateEvent.create_and_process("deployment", %{"deployment" => %{"id" => 2, "sha" => "7"}})
 
-    CreateEvent.create_and_process(
-      "deployment_status",
-      "../support/fixtures/full_flow/deployment_1_status.json"
-    )
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{"id" => 2},
+        "deployment" => %{"id" => 2, "sha" => "7"}
+      })
 
-    CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_3.json")
+      [%{id: repository_id}] = Repository.get_all()
 
-    %{ok: [%{sha: deployment_2_sha}], error: []} =
-      CreateEvent.create_and_process(
-        "deployment",
-        "../support/fixtures/full_flow/deployment_2.json"
-      )
+      result = GithubProject.pushes_by_deployment(repository_id)
+      assert Map.get(result, "4", []) |> Enum.count() == 3
+      assert Map.get(result, "7", []) |> Enum.count() == 3
+    end
 
-    CreateEvent.create_and_process(
-      "deployment_status",
-      "../support/fixtures/full_flow/deployment_2_status.json"
-    )
+    test "handle gaps in push events" do
+      CreateEvent.create_and_process("push", %{"before" => "", "after" => "1"})
+      CreateEvent.create_and_process("push", %{"before" => "1", "after" => "2"})
+      CreateEvent.create_and_process("push", %{"before" => "3", "after" => "4"})
+      CreateEvent.create_and_process("deployment", %{"deployment" => %{"sha" => "4"}})
+      CreateEvent.create_and_process("deployment_status", %{"deployment" => %{"sha" => "4"}})
 
-    CreateEvent.create_and_process("push", "../support/fixtures/full_flow/push_4.json")
+      [%{id: repository_id}] = Repository.get_all()
 
-    result = GithubProject.pushes_by_deployment(%{repository_id: repository_id})
-    assert Map.get(result, deployment_1_sha, []) |> Enum.count() == 2
-    assert Map.get(result, deployment_2_sha, []) |> Enum.count() == 1
+      result = GithubProject.pushes_by_deployment(repository_id)
+      assert Map.get(result, "4", []) |> Enum.count() == 3
+    end
+
+    test "handle first push" do
+      CreateEvent.create_and_process("push", %{"before" => "", "after" => "1"})
+      CreateEvent.create_and_process("deployment", %{"deployment" => %{"sha" => "1"}})
+      CreateEvent.create_and_process("deployment_status", %{"deployment" => %{"sha" => "1"}})
+
+      [%{id: repository_id}] = Repository.get_all()
+
+      result = GithubProject.pushes_by_deployment(repository_id)
+      assert Map.get(result, "1", []) |> Enum.count() == 1
+    end
   end
 
-  test "handle gaps in push events" do
-    CreateEvent.create_and_process2("push", %{"before" => "asd", "after" => "1"})
-    CreateEvent.create_and_process2("push", %{"before" => "1", "after" => "2"})
-    #    CreateEvent.create_and_process2("push", %{"before" => "2", "after" => "3"})
-    CreateEvent.create_and_process2("push", %{"before" => "3", "after" => "4"})
-    CreateEvent.create_and_process2("deployment", %{"deployment" => %{"sha" => "4"}})
-    CreateEvent.create_and_process2("deployment_status", %{"deployment" => %{"sha" => "4"}})
+  #  @tag :skip
+  describe "calculate_lead_time/1" do
+    test "lead time is the time from commit to successful deployment" do
+      CreateEvent.create_and_process("push", %{
+        "before" => "",
+        "after" => "1",
+        "commits" => [
+          %{"id" => "1", "timestamp" => "2019-01-01 10:00:00Z"}
+        ]
+      })
 
-    [%{id: repository_id}] = Repository.get_all()
+      CreateEvent.create_and_process("deployment", %{
+        "deployment" => %{
+          "id" => 1,
+          "sha" => "1",
+          "created_at" => "2019-01-01 11:00:00Z"
+        }
+      })
 
-    result = GithubProject.pushes_by_deployment(%{repository_id: repository_id})
-    assert Map.get(result, "4", []) |> Enum.count() == 3
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{
+          "id" => 1,
+          "state" => "pending",
+          "created_at" => "2019-01-01 11:30:00Z"
+        },
+        "deployment" => %{"id" => 1, "sha" => "1"}
+      })
+
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{
+          "id" => 2,
+          "state" => "success",
+          "created_at" => "2019-01-01 12:00:00Z"
+        },
+        "deployment" => %{"id" => 1, "sha" => "1"}
+      })
+
+      [%{id: repository_id}] = Repository.get_all()
+
+      lead_time = GithubProject.calculate_lead_time(repository_id)
+
+      assert lead_time == {2 * 60, :minutes}
+    end
+
+    test "total lead time is the average of lead time of all commits across all deployments" do
+      CreateEvent.create_and_process("push", %{
+        "before" => "",
+        "after" => "2",
+        "commits" => [
+          %{"id" => "1", "timestamp" => "2019-01-01 10:00:00Z"},
+          %{"id" => "2", "timestamp" => "2019-01-01 11:00:00Z"}
+        ]
+      })
+
+      CreateEvent.create_and_process("deployment", %{
+        "deployment" => %{
+          "id" => 1,
+          "sha" => "2",
+          "created_at" => "2019-01-01 11:00:00Z"
+        }
+      })
+
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{
+          "id" => 1,
+          "state" => "success",
+          "created_at" => "2019-01-01 12:00:00Z"
+        },
+        "deployment" => %{"id" => 1, "sha" => "2"}
+      })
+
+      CreateEvent.create_and_process("push", %{
+        "before" => "",
+        "after" => "4",
+        "commits" => [
+          %{"id" => "3", "timestamp" => "2019-01-01 13:00:00Z"},
+          %{"id" => "4", "timestamp" => "2019-01-01 14:00:00Z"}
+        ]
+      })
+
+      CreateEvent.create_and_process("deployment", %{
+        "deployment" => %{
+          "id" => 2,
+          "sha" => "4",
+          "created_at" => "2019-01-01 14:00:00Z"
+        }
+      })
+
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{
+          "id" => 2,
+          "state" => "success",
+          "created_at" => "2019-01-01 15:00:00Z"
+        },
+        "deployment" => %{"id" => 2, "sha" => "4"}
+      })
+
+      [%{id: repository_id}] = Repository.get_all()
+
+      lead_time = GithubProject.calculate_lead_time(repository_id)
+
+      assert lead_time == {90, :minutes}
+    end
+
+    test "returns 0 when there are no deployments" do
+      assert GithubProject.calculate_lead_time(666) == {0, :minutes}
+    end
+
+    test "does not count commits in unsuccessful deployments" do
+      CreateEvent.create_and_process("push", %{
+        "before" => "",
+        "after" => "1",
+        "commits" => [
+          %{"id" => "1", "timestamp" => "2019-01-01 10:00:00Z"}
+        ]
+      })
+
+      CreateEvent.create_and_process("deployment", %{
+        "deployment" => %{
+          "id" => 1,
+          "sha" => "1",
+          "created_at" => "2019-01-01 11:00:00Z"
+        }
+      })
+
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{
+          "id" => 1,
+          "state" => "pending",
+          "created_at" => "2019-01-01 11:30:00Z"
+        },
+        "deployment" => %{"id" => 1, "sha" => "1"}
+      })
+
+      [%{id: repository_id}] = Repository.get_all()
+
+      lead_time = GithubProject.calculate_lead_time(repository_id)
+
+      assert lead_time == {0, :minutes}
+    end
+
+    test "does not count commits after the latest deployment" do
+      CreateEvent.create_and_process("push", %{
+        "before" => "",
+        "after" => "1",
+        "commits" => [
+          %{"id" => "1", "timestamp" => "2019-01-01 10:00:00Z"}
+        ]
+      })
+
+      CreateEvent.create_and_process("deployment", %{
+        "deployment" => %{
+          "id" => 1,
+          "sha" => "1",
+          "created_at" => "2019-01-01 11:00:00Z"
+        }
+      })
+
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{
+          "id" => 1,
+          "state" => "success",
+          "created_at" => "2019-01-01 12:00:00Z"
+        },
+        "deployment" => %{"id" => 1, "sha" => "1"}
+      })
+
+      CreateEvent.create_and_process("push", %{
+        "before" => "",
+        "after" => "3",
+        "commits" => [
+          %{"id" => "2", "timestamp" => "2019-01-01 13:00:00Z"},
+          %{"id" => "3", "timestamp" => "2019-01-01 14:00:00Z"}
+        ]
+      })
+
+      [%{id: repository_id}] = Repository.get_all()
+
+      lead_time = GithubProject.calculate_lead_time(repository_id)
+
+      assert lead_time == {120, :minutes}
+    end
   end
 
   test "get_events_for/1" do

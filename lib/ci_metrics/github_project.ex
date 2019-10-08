@@ -8,7 +8,7 @@ defmodule CiMetrics.GithubProject do
   alias CiMetrics.Events.{Deployment, DeploymentStatus, Event, EventProcessor, Push}
   alias CiMetrics.Project.Repository
 
-  def pushes_by_deployment(%{repository_id: repository_id}) do
+  def pushes_by_deployment(repository_id) do
     deployments_by_sha = deployments_by_sha(repository_id)
 
     pushes =
@@ -16,6 +16,7 @@ defmodule CiMetrics.GithubProject do
       |> where(repository_id: ^repository_id)
       |> order_by(asc: :id)
       |> Repo.all()
+      |> Repo.preload(:commits)
 
     pushes_by_before_sha =
       Enum.reduce(pushes, %{}, fn push, map ->
@@ -35,11 +36,47 @@ defmodule CiMetrics.GithubProject do
     |> Map.get(:all_pushes)
   end
 
+  def calculate_lead_time(repository_id) do
+    pushes_by_deployment = pushes_by_deployment(repository_id)
+    deployments_by_sha = deployments_by_sha(repository_id)
+
+    deployments_by_sha
+    |> Map.values()
+    |> Enum.flat_map(fn deployment ->
+      deployment_status =
+        deployment.deployment_statuses
+        |> Enum.find(fn %{status: status} -> status == "success" end)
+
+      pushes_by_deployment
+      |> Map.get(deployment.sha)
+      |> Enum.flat_map(fn push -> push.commits end)
+      |> Enum.map(fn commit ->
+        DateTime.diff(deployment_status.status_at, commit.committed_at, :second)
+      end)
+    end)
+    |> calculate_average()
+    |> to_minutes_from(:seconds)
+  end
+
+  defp calculate_average([]), do: 0
+  defp calculate_average(numbers), do: Enum.sum(numbers) / Enum.count(numbers)
+
+  defp to_minutes_from(time, :seconds) do
+    time_in_minutes =
+      (time / 60)
+      |> Decimal.from_float()
+      |> Decimal.round(0)
+      |> Decimal.to_integer()
+
+    {time_in_minutes, :minutes}
+  end
+
   defp deployments_by_sha(repository_id) do
     deployments_query =
       from deployment in Deployment,
         join: status in DeploymentStatus,
         on: deployment.deployment_id == status.deployment_id,
+        preload: [deployment_statuses: status],
         where:
           deployment.repository_id == ^repository_id and
             status.status == "success",

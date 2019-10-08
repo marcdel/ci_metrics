@@ -1,7 +1,15 @@
 defmodule CreateEvent do
   alias CiMetrics.GithubProject
 
-  def create_and_process2("push", params) do
+  def create_and_process(event_name, params \\ %{}) do
+    event_name
+    |> create(params)
+    |> GithubProject.process_event()
+  end
+
+  def create(event_name), do: create(event_name, %{})
+
+  def create("push", params) do
     raw_event = %{
       "ref" => Map.get(params, "ref", "refs/heads/master"),
       "before" => Map.get(params, "before", Ecto.UUID.generate()),
@@ -11,12 +19,13 @@ defmodule CreateEvent do
           %{"full_name" => "group/repository"},
           Map.get(params, "repository", %{})
         ),
-      "commits" => [
-        %{
-          "id" => Ecto.UUID.generate(),
-          "timestamp" => "2019-09-06 03:26:10Z"
-        }
-      ]
+      "commits" =>
+        Map.get(params, "commits", [
+          %{
+            "id" => Ecto.UUID.generate(),
+            "timestamp" => "2019-09-06 03:26:10Z"
+          }
+        ])
     }
 
     {:ok, event} =
@@ -26,10 +35,10 @@ defmodule CreateEvent do
         raw_event: raw_event
       })
 
-    GithubProject.process_event(event)
+    event
   end
 
-  def create_and_process2("deployment", params) do
+  def create("deployment", params) do
     raw_event = %{
       "deployment" =>
         Map.merge(
@@ -54,10 +63,10 @@ defmodule CreateEvent do
         raw_event: raw_event
       })
 
-    GithubProject.process_event(event)
+    event
   end
 
-  def create_and_process2("deployment_status", params) do
+  def create("deployment_status", params) do
     raw_event = %{
       "deployment_status" =>
         Map.merge(
@@ -90,14 +99,22 @@ defmodule CreateEvent do
         raw_event: raw_event
       })
 
-    GithubProject.process_event(event)
+    event
   end
 
-  def create_and_process(event_type, file_path) do
-    GithubProject.process_event(create(event_type, file_path))
+  def multi_push do
+    create_from_json("push", "../support/fixtures/multi_push.json")
   end
 
-  def create(event_type, file_path) do
+  def deployment do
+    create_from_json("deployment", "../support/fixtures/deployment.json")
+  end
+
+  def deployment_status do
+    create_from_json("deployment_status", "../support/fixtures/deployment_status_success.json")
+  end
+
+  defp create_from_json(event_type, file_path) do
     raw_event =
       file_path
       |> Path.expand(__DIR__)
@@ -112,33 +129,5 @@ defmodule CreateEvent do
       })
 
     event
-  end
-
-  def push do
-    create("push", "../support/fixtures/push.json")
-  end
-
-  def second_push do
-    create("push", "../support/fixtures/second_push.json")
-  end
-
-  def multi_push do
-    create("push", "../support/fixtures/multi_push.json")
-  end
-
-  def deployment do
-    create("deployment", "../support/fixtures/deployment.json")
-  end
-
-  def second_deployment do
-    create("deployment", "../support/fixtures/second_deployment.json")
-  end
-
-  def deployment_status do
-    create("deployment_status", "../support/fixtures/deployment_status_success.json")
-  end
-
-  def second_deployment_status do
-    create("deployment_status", "../support/fixtures/second_deployment_status_success.json")
   end
 end

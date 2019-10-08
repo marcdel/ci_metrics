@@ -39,7 +39,7 @@ defmodule CiMetrics.Events.Push do
   def changeset(push, attrs) do
     push
     |> cast(attrs, [:branch, :before_sha, :after_sha, :repository_id, :event_id])
-    |> validate_required([:branch, :before_sha, :after_sha, :repository_id, :event_id])
+    |> validate_required([:branch, :after_sha, :repository_id, :event_id])
     |> foreign_key_constraint(:repository_id)
     |> foreign_key_constraint(:event_id)
   end
