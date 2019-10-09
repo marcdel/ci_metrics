@@ -57,7 +57,7 @@ defmodule CiMetrics.GithubProject do
         |> Enum.find(fn %{status: status} -> status == "success" end)
 
       pushes_by_deployment
-      |> Map.get(deployment.sha)
+      |> Map.get(deployment.sha, [])
       |> Enum.flat_map(fn push -> push.commits end)
       |> Enum.map(fn commit ->
         DateTime.diff(deployment_status.status_at, commit.committed_at, :second)

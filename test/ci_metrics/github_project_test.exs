@@ -163,7 +163,6 @@ defmodule CiMetrics.GithubProjectTest do
     end
   end
 
-  #  @tag :skip
   describe "calculate_lead_time/1" do
     test "lead time is the time from commit to successful deployment" do
       CreateEvent.create_and_process("push", %{
@@ -269,6 +268,31 @@ defmodule CiMetrics.GithubProjectTest do
 
     test "returns 0 when there are no deployments" do
       assert GithubProject.calculate_lead_time(666) == {0, :minutes}
+    end
+
+    test "does not count deployments with no pushes" do
+      CreateEvent.create_and_process("deployment", %{
+        "deployment" => %{
+          "id" => 1,
+          "sha" => "1",
+          "created_at" => "2019-01-01 14:00:00Z"
+        }
+      })
+
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{
+          "id" => 1,
+          "state" => "success",
+          "created_at" => "2019-01-01 15:00:00Z"
+        },
+        "deployment" => %{"id" => 1, "sha" => "1"}
+      })
+
+      [%{id: repository_id}] = Repository.get_all()
+
+      lead_time = GithubProject.calculate_lead_time(repository_id)
+
+      assert lead_time == {0, :minutes}
     end
 
     test "does not count commits in unsuccessful deployments" do
