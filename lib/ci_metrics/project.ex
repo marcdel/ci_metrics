@@ -5,4 +5,5 @@ defmodule CiMetrics.Project do
               error: [Ecto.Changeset.t()]
             }
   @callback get_events_for(struct()) :: [CiMetrics.Events.Event.type()]
+  @callback calculate_lead_time(integer()) :: {integer(), atom()}
 end

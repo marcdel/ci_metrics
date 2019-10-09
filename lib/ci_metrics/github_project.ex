@@ -36,7 +36,16 @@ defmodule CiMetrics.GithubProject do
     |> Map.get(:all_pushes)
   end
 
-  def calculate_lead_time(repository_id) do
+  @impl CiMetrics.Project
+  def calculate_lead_time(repository_id) when is_binary(repository_id) do
+    repository_id
+    |> Integer.parse()
+    |> Tuple.to_list()
+    |> List.first()
+    |> calculate_lead_time()
+  end
+
+  def calculate_lead_time(repository_id) when is_integer(repository_id) do
     pushes_by_deployment = pushes_by_deployment(repository_id)
     deployments_by_sha = deployments_by_sha(repository_id)
 

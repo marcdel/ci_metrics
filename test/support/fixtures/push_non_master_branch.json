@@ -1,0 +1,258 @@
+{
+  "ref": "refs/heads/lead_time",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "4de567dc85703269be5c1115ce3b086b3412c792",
+  "repository": {
+    "id": 205228081,
+    "node_id": "MDEwOlJlcG9zaXRvcnkyMDUyMjgwODE=",
+    "name": "ci_metrics",
+    "full_name": "marcdel/ci_metrics",
+    "private": false,
+    "owner": {
+      "name": "marcdel",
+      "email": "delagrammatikas@gmail.com",
+      "login": "marcdel",
+      "id": 693730,
+      "node_id": "MDQ6VXNlcjY5MzczMA==",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/693730?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/marcdel",
+      "html_url": "https://github.com/marcdel",
+      "followers_url": "https://api.github.com/users/marcdel/followers",
+      "following_url": "https://api.github.com/users/marcdel/following{/other_user}",
+      "gists_url": "https://api.github.com/users/marcdel/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/marcdel/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/marcdel/subscriptions",
+      "organizations_url": "https://api.github.com/users/marcdel/orgs",
+      "repos_url": "https://api.github.com/users/marcdel/repos",
+      "events_url": "https://api.github.com/users/marcdel/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/marcdel/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/marcdel/ci_metrics",
+    "description": "Amadeus Cho is a man with the mind of a supercomputer and power of Hercules. He can process multiple streams of information around him which allows him to find solutions to tactical challenges faster.",
+    "fork": false,
+    "url": "https://github.com/marcdel/ci_metrics",
+    "forks_url": "https://api.github.com/repos/marcdel/ci_metrics/forks",
+    "keys_url": "https://api.github.com/repos/marcdel/ci_metrics/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/marcdel/ci_metrics/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/marcdel/ci_metrics/teams",
+    "hooks_url": "https://api.github.com/repos/marcdel/ci_metrics/hooks",
+    "issue_events_url": "https://api.github.com/repos/marcdel/ci_metrics/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/marcdel/ci_metrics/events",
+    "assignees_url": "https://api.github.com/repos/marcdel/ci_metrics/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/marcdel/ci_metrics/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/marcdel/ci_metrics/tags",
+    "blobs_url": "https://api.github.com/repos/marcdel/ci_metrics/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/marcdel/ci_metrics/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/marcdel/ci_metrics/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/marcdel/ci_metrics/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/marcdel/ci_metrics/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/marcdel/ci_metrics/languages",
+    "stargazers_url": "https://api.github.com/repos/marcdel/ci_metrics/stargazers",
+    "contributors_url": "https://api.github.com/repos/marcdel/ci_metrics/contributors",
+    "subscribers_url": "https://api.github.com/repos/marcdel/ci_metrics/subscribers",
+    "subscription_url": "https://api.github.com/repos/marcdel/ci_metrics/subscription",
+    "commits_url": "https://api.github.com/repos/marcdel/ci_metrics/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/marcdel/ci_metrics/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/marcdel/ci_metrics/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/marcdel/ci_metrics/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/marcdel/ci_metrics/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/marcdel/ci_metrics/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/marcdel/ci_metrics/merges",
+    "archive_url": "https://api.github.com/repos/marcdel/ci_metrics/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/marcdel/ci_metrics/downloads",
+    "issues_url": "https://api.github.com/repos/marcdel/ci_metrics/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/marcdel/ci_metrics/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/marcdel/ci_metrics/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/marcdel/ci_metrics/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/marcdel/ci_metrics/labels{/name}",
+    "releases_url": "https://api.github.com/repos/marcdel/ci_metrics/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/marcdel/ci_metrics/deployments",
+    "created_at": 1567103921,
+    "updated_at": "2019-10-05T18:56:39Z",
+    "pushed_at": 1570564397,
+    "git_url": "git://github.com/marcdel/ci_metrics.git",
+    "ssh_url": "git@github.com:marcdel/ci_metrics.git",
+    "clone_url": "https://github.com/marcdel/ci_metrics.git",
+    "svn_url": "https://github.com/marcdel/ci_metrics",
+    "homepage": "https://amadeus-cho.herokuapp.com",
+    "size": 234,
+    "stargazers_count": 0,
+    "watchers_count": 0,
+    "language": "Elixir",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": false,
+    "has_pages": false,
+    "forks_count": 0,
+    "mirror_url": null,
+    "archived": false,
+    "disabled": false,
+    "open_issues_count": 0,
+    "license": null,
+    "forks": 0,
+    "open_issues": 0,
+    "watchers": 0,
+    "default_branch": "master",
+    "stargazers": 0,
+    "master_branch": "master"
+  },
+  "pusher": {
+    "name": "marcdel",
+    "email": "delagrammatikas@gmail.com"
+  },
+  "sender": {
+    "login": "marcdel",
+    "id": 693730,
+    "node_id": "MDQ6VXNlcjY5MzczMA==",
+    "avatar_url": "https://avatars0.githubusercontent.com/u/693730?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/marcdel",
+    "html_url": "https://github.com/marcdel",
+    "followers_url": "https://api.github.com/users/marcdel/followers",
+    "following_url": "https://api.github.com/users/marcdel/following{/other_user}",
+    "gists_url": "https://api.github.com/users/marcdel/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/marcdel/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/marcdel/subscriptions",
+    "organizations_url": "https://api.github.com/users/marcdel/orgs",
+    "repos_url": "https://api.github.com/users/marcdel/repos",
+    "events_url": "https://api.github.com/users/marcdel/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/marcdel/received_events",
+    "type": "User",
+    "site_admin": false
+  },
+  "created": true,
+  "deleted": false,
+  "forced": false,
+  "base_ref": null,
+  "compare": "https://github.com/marcdel/ci_metrics/compare/66532507e5ca^...4de567dc8570",
+  "commits": [
+    {
+      "id": "66532507e5ca3a9d8749d91e0eb7c476f82272ee",
+      "tree_id": "20687e16a32e5bbe8b84c70c107b1112c907d691",
+      "distinct": true,
+      "message": "Make push before_sha nullable since the first push won't have one",
+      "timestamp": "2019-10-05T20:18:35-07:00",
+      "url": "https://github.com/marcdel/ci_metrics/commit/66532507e5ca3a9d8749d91e0eb7c476f82272ee",
+      "author": {
+        "name": "Marc Delagrammatikas",
+        "email": "delagrammatikas@gmail.com",
+        "username": "marcdel"
+      },
+      "committer": {
+        "name": "Marc Delagrammatikas",
+        "email": "delagrammatikas@gmail.com",
+        "username": "marcdel"
+      },
+      "added": [
+        "priv/repo/migrations/20191006022950_make_pushes_before_sha_nullable.exs"
+      ],
+      "removed": [
+
+      ],
+      "modified": [
+        "lib/ci_metrics/events/push.ex",
+        "test/ci_metrics/github_project_test.exs"
+      ]
+    },
+    {
+      "id": "545e2504e4a2633866bff9a8c0363ca4f136cb08",
+      "tree_id": "fc414aee24f023db2c14df98c2901ba85c1d21eb",
+      "distinct": true,
+      "message": "Remove unused fixture files",
+      "timestamp": "2019-10-05T23:14:12-07:00",
+      "url": "https://github.com/marcdel/ci_metrics/commit/545e2504e4a2633866bff9a8c0363ca4f136cb08",
+      "author": {
+        "name": "Marc Delagrammatikas",
+        "email": "delagrammatikas@gmail.com",
+        "username": "marcdel"
+      },
+      "committer": {
+        "name": "Marc Delagrammatikas",
+        "email": "delagrammatikas@gmail.com",
+        "username": "marcdel"
+      },
+      "added": [
+
+      ],
+      "removed": [
+        "test/support/fixtures/full_flow/deployment_1.json",
+        "test/support/fixtures/full_flow/deployment_1_status.json",
+        "test/support/fixtures/full_flow/deployment_2.json",
+        "test/support/fixtures/full_flow/deployment_2_status.json",
+        "test/support/fixtures/full_flow/push_1.json",
+        "test/support/fixtures/full_flow/push_2.json",
+        "test/support/fixtures/full_flow/push_3.json",
+        "test/support/fixtures/full_flow/push_4.json",
+        "test/support/fixtures/second_deployment.json",
+        "test/support/fixtures/second_deployment_status_success.json",
+        "test/support/fixtures/second_push.json"
+      ],
+      "modified": [
+        "test/ci_metrics/github_project_test.exs",
+        "test/support/create_event.ex"
+      ]
+    },
+    {
+      "id": "4de567dc85703269be5c1115ce3b086b3412c792",
+      "tree_id": "804bbb4a290726b51e138335363d2d790b47089a",
+      "distinct": true,
+      "message": "Calculate lead time for a particular repository\n\nProbably want this logic to live elsewhere, but this seemed like a good\nstopping point.",
+      "timestamp": "2019-10-08T12:52:00-07:00",
+      "url": "https://github.com/marcdel/ci_metrics/commit/4de567dc85703269be5c1115ce3b086b3412c792",
+      "author": {
+        "name": "Marc Delagrammatikas",
+        "email": "delagrammatikas@gmail.com",
+        "username": "marcdel"
+      },
+      "committer": {
+        "name": "Marc Delagrammatikas",
+        "email": "delagrammatikas@gmail.com",
+        "username": "marcdel"
+      },
+      "added": [
+
+      ],
+      "removed": [
+
+      ],
+      "modified": [
+        "lib/ci_metrics/github_project.ex",
+        "test/ci_metrics/github_project_test.exs",
+        "test/support/create_event.ex"
+      ]
+    }
+  ],
+  "head_commit": {
+    "id": "4de567dc85703269be5c1115ce3b086b3412c792",
+    "tree_id": "804bbb4a290726b51e138335363d2d790b47089a",
+    "distinct": true,
+    "message": "Calculate lead time for a particular repository\n\nProbably want this logic to live elsewhere, but this seemed like a good\nstopping point.",
+    "timestamp": "2019-10-08T12:52:00-07:00",
+    "url": "https://github.com/marcdel/ci_metrics/commit/4de567dc85703269be5c1115ce3b086b3412c792",
+    "author": {
+      "name": "Marc Delagrammatikas",
+      "email": "delagrammatikas@gmail.com",
+      "username": "marcdel"
+    },
+    "committer": {
+      "name": "Marc Delagrammatikas",
+      "email": "delagrammatikas@gmail.com",
+      "username": "marcdel"
+    },
+    "added": [
+
+    ],
+    "removed": [
+
+    ],
+    "modified": [
+      "lib/ci_metrics/github_project.ex",
+      "test/ci_metrics/github_project_test.exs",
+      "test/support/create_event.ex"
+    ]
+  }
+}

@@ -16,6 +16,18 @@ defmodule CiMetrics.Project.Repository do
     timestamps()
   end
 
+  def get(id) when is_binary(id) do
+    id
+    |> Integer.parse()
+    |> Tuple.to_list()
+    |> List.first()
+    |> get()
+  end
+
+  def get(id) when is_integer(id) do
+    Repo.get(Repository, id)
+  end
+
   def get_by(params) do
     Repo.get_by(Repository, params)
   end
