@@ -15,11 +15,19 @@ defmodule CiMetricsWeb.RepositoryControllerTest do
       |> Map.get(:id)
       |> Integer.to_string()
 
-    expect(MockProject, :calculate_lead_time, fn ^repository_id -> {120, :minutes} end)
+    expect(MockProject, :calculate_lead_time, fn ^repository_id ->
+      %CiMetrics.Metrics.TimeUnitMetric{
+        days: 0,
+        hours: 2,
+        minutes: 30,
+        seconds: 0,
+        weeks: 0
+      }
+    end)
 
     conn = get(conn, "/repositories/" <> repository_id)
 
     assert response(conn, 200) =~ "Repository: marcdel/sick_bro"
-    assert response(conn, 200) =~ "Average Lead Time: 120 minutes"
+    assert response(conn, 200) =~ "Average Lead Time: 2 hours, 30 minutes"
   end
 end

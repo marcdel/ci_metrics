@@ -6,6 +6,7 @@ defmodule CiMetrics.GithubProject do
 
   alias CiMetrics.{GithubClient, Repo}
   alias CiMetrics.Events.{Deployment, DeploymentStatus, Event, EventProcessor, Push}
+  alias CiMetrics.Metrics.TimeUnitMetric
   alias CiMetrics.Project.Repository
 
   def pushes_by_deployment(repository_id) do
@@ -64,20 +65,22 @@ defmodule CiMetrics.GithubProject do
       end)
     end)
     |> calculate_average()
-    |> to_minutes_from(:seconds)
+    |> to_integer()
+    |> to_time_unit_metric()
   end
 
   defp calculate_average([]), do: 0
   defp calculate_average(numbers), do: Enum.sum(numbers) / Enum.count(numbers)
 
-  defp to_minutes_from(time, :seconds) do
-    time_in_minutes =
-      (time / 60)
-      |> Decimal.from_float()
-      |> Decimal.round(0)
-      |> Decimal.to_integer()
+  defp to_time_unit_metric(time), do: TimeUnitMetric.new(time)
 
-    {time_in_minutes, :minutes}
+  defp to_integer(time) when is_integer(time), do: time
+
+  defp to_integer(time) when is_float(time) do
+    time
+    |> Decimal.from_float()
+    |> Decimal.round(0)
+    |> Decimal.to_integer()
   end
 
   defp deployments_by_sha(repository_id) do

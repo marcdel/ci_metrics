@@ -3,6 +3,7 @@ defmodule CiMetrics.GithubProjectTest do
 
   alias CiMetrics.Events.{Event, Deployment, DeploymentStatus}
   alias CiMetrics.GithubProject
+  alias CiMetrics.Metrics.TimeUnitMetric
   alias CiMetrics.Project.{Commit, Repository}
 
   describe "create_event/3" do
@@ -203,7 +204,13 @@ defmodule CiMetrics.GithubProjectTest do
 
       lead_time = GithubProject.calculate_lead_time(repository_id)
 
-      assert lead_time == {2 * 60, :minutes}
+      assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
+               days: 0,
+               hours: 2,
+               minutes: 0,
+               seconds: 0,
+               weeks: 0
+             }
     end
 
     test "total lead time is the average of lead time of all commits across all deployments" do
@@ -263,11 +270,23 @@ defmodule CiMetrics.GithubProjectTest do
 
       lead_time = GithubProject.calculate_lead_time(repository_id)
 
-      assert lead_time == {90, :minutes}
+      assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
+               days: 0,
+               hours: 1,
+               minutes: 30,
+               seconds: 0,
+               weeks: 0
+             }
     end
 
     test "returns 0 when there are no deployments" do
-      assert GithubProject.calculate_lead_time(666) == {0, :minutes}
+      assert GithubProject.calculate_lead_time(666) == %CiMetrics.Metrics.TimeUnitMetric{
+               days: 0,
+               hours: 0,
+               minutes: 0,
+               seconds: 0,
+               weeks: 0
+             }
     end
 
     test "does not count deployments with no pushes" do
@@ -292,7 +311,13 @@ defmodule CiMetrics.GithubProjectTest do
 
       lead_time = GithubProject.calculate_lead_time(repository_id)
 
-      assert lead_time == {0, :minutes}
+      assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
+               days: 0,
+               hours: 0,
+               minutes: 0,
+               seconds: 0,
+               weeks: 0
+             }
     end
 
     test "does not count commits in unsuccessful deployments" do
@@ -325,7 +350,13 @@ defmodule CiMetrics.GithubProjectTest do
 
       lead_time = GithubProject.calculate_lead_time(repository_id)
 
-      assert lead_time == {0, :minutes}
+      assert lead_time == %TimeUnitMetric{
+               days: 0,
+               hours: 0,
+               minutes: 0,
+               seconds: 0,
+               weeks: 0
+             }
     end
 
     test "does not count commits after the latest deployment" do
@@ -367,7 +398,13 @@ defmodule CiMetrics.GithubProjectTest do
 
       lead_time = GithubProject.calculate_lead_time(repository_id)
 
-      assert lead_time == {120, :minutes}
+      assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
+               days: 0,
+               hours: 2,
+               minutes: 0,
+               seconds: 0,
+               weeks: 0
+             }
     end
   end
 
