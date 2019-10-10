@@ -1,10 +1,10 @@
 defmodule CiMetrics.GithubProjectTest do
   use CiMetrics.DataCase, async: true
 
-  alias CiMetrics.Events.{Event, Deployment, DeploymentStatus}
+  alias CiMetrics.Events.Event
   alias CiMetrics.GithubProject
   alias CiMetrics.Metrics.TimeUnitMetric
-  alias CiMetrics.Project.{Commit, Repository}
+  alias CiMetrics.Project.Repository
 
   describe "create_event/3" do
     test "creates an event with the id, type and raw event" do
@@ -77,36 +77,6 @@ defmodule CiMetrics.GithubProjectTest do
                })
 
       assert Event.get_all() |> Enum.count() == 1
-    end
-  end
-
-  describe "process_event/1" do
-    test "can process different types of events" do
-      event = CreateEvent.create("push")
-      %{ok: [%Commit{}], error: []} = GithubProject.process_event(event)
-
-      event = CreateEvent.create("deployment")
-      %{ok: [%Deployment{}], error: []} = GithubProject.process_event(event)
-
-      event = CreateEvent.create("deployment_status")
-      %{ok: [%DeploymentStatus{}], error: []} = GithubProject.process_event(event)
-    end
-
-    test "handles unknown event types" do
-      raw_event =
-        "../support/fixtures/unknown_event.json"
-        |> Path.expand(__DIR__)
-        |> File.read!()
-        |> Jason.decode!()
-
-      {:ok, event} =
-        GithubProject.create_event(%{
-          event_id: "asdasd",
-          event_type: "unknown_type",
-          raw_event: raw_event
-        })
-
-      assert %{ok: [], error: []} = GithubProject.process_event(event)
     end
   end
 

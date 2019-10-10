@@ -149,22 +149,7 @@ defmodule CiMetrics.GithubProject do
   end
 
   @impl CiMetrics.Project
-  def process_event(%Event{event_type: "push"} = event) do
-    EventProcessor.process(%Push{event: event})
-  end
-
-  def process_event(%Event{event_type: "deployment"} = event) do
-    EventProcessor.process(%Deployment{event: event})
-  end
-
-  def process_event(%Event{event_type: "deployment_status"} = event) do
-    EventProcessor.process(%DeploymentStatus{event: event})
-  end
-
-  def process_event(%Event{event_type: event_type}) do
-    Logger.error("Process not defined for #{event_type}")
-    %{ok: [], error: []}
-  end
+  def process_event(event), do: EventProcessor.process(event)
 
   @impl CiMetrics.Project
   def get_events_for(%{repository_id: id}) when is_binary(id) do

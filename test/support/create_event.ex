@@ -102,6 +102,25 @@ defmodule CreateEvent do
     event
   end
 
+  def create("unknown_event", params) do
+    raw_event = %{
+      "repository" =>
+        Map.merge(
+          %{"full_name" => "group/repository"},
+          Map.get(params, "repository", %{})
+        )
+    }
+
+    {:ok, event} =
+      GithubProject.create_event(%{
+        event_id: Ecto.UUID.generate(),
+        event_type: "unknown_event",
+        raw_event: raw_event
+      })
+
+    event
+  end
+
   def multi_push do
     create_from_json("push", "../support/fixtures/multi_push.json")
   end
