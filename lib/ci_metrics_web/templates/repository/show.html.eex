@@ -1,3 +1,3 @@
 <h1>Repository: <%= full_name(@repository) %></h1>
 
-<h3>Average Lead Time: <%= @repository.average_lead_time %> minutes</h3>
+<h3>Average Lead Time: <%= @repository.average_lead_time %></h3>
