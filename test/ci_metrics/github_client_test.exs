@@ -11,7 +11,17 @@ defmodule CiMetrics.GithubClientTest do
     expected_headers = [{"content-type", "application/json"}]
 
     expected_body =
-      "{\"active\":true,\"config\":{\"content_type\":\"json\",\"insecure_ssl\":\"0\",\"url\":\"localhost:4000/api/events\"},\"events\":[\"*\"],\"name\":\"web\"}"
+      Jason.encode!(%{
+        active: true,
+        config: %{
+          content_type: "json",
+          insecure_ssl: "0",
+          url: "localhost:4000/api/events",
+          secret: Application.get_env(:ci_metrics, :github_secret)
+        },
+        events: ["*"],
+        name: "web"
+      })
 
     expect(MockHTTPClient, :post, fn ^expected_url, ^expected_headers, ^expected_body, [] ->
       {:ok,
@@ -51,11 +61,23 @@ defmodule CiMetrics.GithubClientTest do
   end
 
   test "existing webhook" do
+    invalid_response_body =
+      Jason.encode!(%{
+        message: "Validation Failed",
+        errors: [
+          %{
+            resource: "Hook",
+            code: "custom",
+            message: "Hook already exists on this repository"
+          }
+        ],
+        documentation_url: "https://developer.github.com/v3/repos/hooks/#create-a-hook"
+      })
+
     expect(MockHTTPClient, :post, fn _, _, _, [] ->
       {:ok,
        %Mojito.Response{
-         body:
-           "{\"message\": \"Validation Failed\", \"errors\": [{\"resource\": \"Hook\", \"code\": \"custom\", \"message\": \"Hook already exists on this repository\"}], \"documentation_url\": \"https://developer.github.com/v3/repos/hooks/#create-a-hook\"}",
+         body: invalid_response_body,
          complete: true,
          headers: [],
          status_code: 422
@@ -68,11 +90,16 @@ defmodule CiMetrics.GithubClientTest do
   end
 
   test "repository not found" do
+    invalid_response_body =
+      Jason.encode!(%{
+        message: "Not Found",
+        documentation_url: "https://developer.github.com/v3/repos/hooks/#create-a-hook"
+      })
+
     expect(MockHTTPClient, :post, fn _, _, _, [] ->
       {:ok,
        %Mojito.Response{
-         body:
-           "{\"message\": \"Not Found\", \"documentation_url\": \"https://developer.github.com/v3/repos/hooks/#create-a-hook\" }",
+         body: invalid_response_body,
          complete: true,
          headers: [],
          status_code: 404

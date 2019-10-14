@@ -2,6 +2,8 @@ defmodule CiMetricsWeb.WebhookControllerTest do
   use CiMetricsWeb.ConnCase, async: true
   import Mox
 
+  alias CiMetrics.Project.Repository
+
   setup :verify_on_exit!
 
   test "GET /webhooks/new", %{conn: conn} do
@@ -28,6 +30,10 @@ defmodule CiMetricsWeb.WebhookControllerTest do
       })
 
     assert get_flash(conn, :info) == "Webhook created."
+
+    [repository] = Repository.get_all()
+    assert repository.name == "ci_metrics"
+    assert repository.owner == "marcdel"
   end
 
   test "POST /webhooks with github error", %{conn: conn} do

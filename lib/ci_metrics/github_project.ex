@@ -5,16 +5,21 @@ defmodule CiMetrics.GithubProject do
   import Ecto.Query
 
   alias CiMetrics.{GithubClient, Repo}
-  alias CiMetrics.Events.{Deployment, DeploymentStatus, Event, EventProcessor, Push}
-  alias CiMetrics.Metrics.{LeadTime, TimeUnitMetric}
+  alias CiMetrics.Events.{Event, EventProcessor}
+  alias CiMetrics.Metrics.LeadTime
   alias CiMetrics.Project.Repository
 
   @impl CiMetrics.Project
   def calculate_lead_time(repository_id), do: LeadTime.calculate(repository_id)
 
-  def create_webhook(repository_name, access_token) do
+  def create_repository(repository_path) do
+    [owner, name] = String.split(repository_path, "/")
+    Repository.insert_or_update(%{owner: owner, name: name})
+  end
+
+  def create_webhook(repository, access_token) do
     GithubClient.create_webhook(%{
-      repository_name: repository_name,
+      repository_name: Repository.full_name(repository),
       access_token: access_token,
       callback_url: Application.get_env(:ci_metrics, :webhook_callback_url),
       events: ["*"]

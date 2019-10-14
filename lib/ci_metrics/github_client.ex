@@ -5,6 +5,8 @@ defmodule CiMetrics.GithubClient do
 
   @callback create_webhook(map()) :: {:ok, nil} | {:error, any()}
   def create_webhook(webhook) do
+    secret = Application.get_env(:ci_metrics, :github_secret)
+
     url =
       "https://api.github.com/repos/#{webhook.repository_name}/hooks?access_token=#{
         webhook.access_token
@@ -17,6 +19,7 @@ defmodule CiMetrics.GithubClient do
         "events" => webhook.events,
         "config" => %{
           "url" => webhook.callback_url,
+          "secret" => secret,
           "content_type" => "json",
           "insecure_ssl" => "0"
         }

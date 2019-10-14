@@ -16,6 +16,10 @@ defmodule CiMetrics.Project.Repository do
     timestamps()
   end
 
+  def full_name(%{owner: owner, name: name}) do
+    "#{owner}/#{name}"
+  end
+
   def get(id) when is_binary(id) do
     id
     |> Integer.parse()
