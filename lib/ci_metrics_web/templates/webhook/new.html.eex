@@ -10,6 +10,6 @@
       Personal access token <%= password_input f, :access_token %>
     </label>
 
-    <%= submit "Create" %>
+    <%= submit "Create", class: "button button-outline" %>
   </fieldset>
 <% end %>

@@ -1,6 +1,9 @@
-<section class="phx-hero">
-  <h1>CI Metrics</h1>
-  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ex purus, sagittis vitae feugiat non, molestie sed erat. Donec egestas quis turpis a malesuada. Proin felis nisl, suscipit in dolor ac, varius dignissim est. Mauris quis congue metus, eget laoreet nunc. Praesent sed lectus in turpis dapibus egestas et quis sem. Sed auctor dolor ac posuere posuere. Fusce rutrum metus vel aliquet commodo.</p>
-  <br/>
-  <a href="/webhooks/new" class="button button-primary">Get Started</a>
+<section>
+  <h2>Sed nisi lectus, eleifend eu porta pharetra</h2>
+  <p>
+    Praesent ac neque nibh. Fusce hendrerit vel urna id ornare. Quisque ultricies enim in lacus porta fringilla. Curabitur lorem magna, dapibus non ultrices id, posuere finibus quam. Donec sed felis eget arcu euismod euismod eu ac tortor.
+  </p>
+  <p>
+    <%= link "Get Started", to: Routes.webhook_path(@conn, :new), class: "button button-outline" %>
+  </p>
 </section>
