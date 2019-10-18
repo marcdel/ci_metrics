@@ -11,9 +11,15 @@ defmodule CiMetrics.Application do
       # Start the Ecto repository
       CiMetrics.Repo,
       # Start the endpoint when the application starts
-      CiMetricsWeb.Endpoint
+      CiMetricsWeb.Endpoint,
       # Starts a worker by calling: CiMetrics.Worker.start_link(arg)
       # {CiMetrics.Worker, arg},
+      %{
+        id: "generate-metrics-daily",
+        start:
+          {SchedEx, :run_every,
+           [CiMetrics.Metrics, :save_average_lead_time_snapshots, [], "1 1 * * *"]}
+      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

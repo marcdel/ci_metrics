@@ -31,6 +31,12 @@ defmodule CiMetrics.Metrics.TimeUnitMetric do
     |> or_default_message()
   end
 
+  def in_seconds(%TimeUnitMetric{weeks: w, days: d, hours: h, minutes: m, seconds: s}) do
+    [week, day, hour, minute, second] = divisors()
+
+    w * week + day * d + hour * h + minute * m + second * s
+  end
+
   defp divisors() do
     minute = 60
     hour = minute * 60

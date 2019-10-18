@@ -110,7 +110,7 @@ defmodule CiMetrics.Metrics.LeadTime do
 
   defp calculate_average(numbers), do: Enum.sum(numbers) / Enum.count(numbers)
 
-  defp to_time_unit_metric(time), do: TimeUnitMetric.new(time)
+  defp to_time_unit_metric(seconds), do: TimeUnitMetric.new(seconds)
 
   defp to_integer(time) when is_integer(time), do: time
 
