@@ -6,11 +6,19 @@ defmodule CiMetrics.GithubProject do
 
   alias CiMetrics.{GithubClient, Repo}
   alias CiMetrics.Events.{Event, EventProcessor}
-  alias CiMetrics.Metrics.LeadTime
+  alias CiMetrics.Metrics.{LeadTime, MetricSnapshot, TimeUnitMetric}
   alias CiMetrics.Project.Repository
 
   @impl CiMetrics.Project
   def calculate_lead_time(repository_id), do: LeadTime.calculate(repository_id)
+
+  @impl CiMetrics.Project
+  def daily_lead_time_snapshots(repository_id) do
+    MetricSnapshot
+    |> where(repository_id: ^repository_id)
+    |> order_by(desc: :id)
+    |> Repo.all()
+  end
 
   def create_repository(repository_path) do
     [owner, name] = String.split(repository_path, "/")

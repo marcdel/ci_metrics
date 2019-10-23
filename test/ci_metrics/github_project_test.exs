@@ -3,8 +3,9 @@ defmodule CiMetrics.GithubProjectTest do
 
   alias CiMetrics.Events.Event
   alias CiMetrics.GithubProject
-  alias CiMetrics.Metrics.TimeUnitMetric
+  alias CiMetrics.Metrics.{TimeUnitMetric, MetricSnapshot}
   alias CiMetrics.Project.Repository
+  alias CiMetrics.Repo
 
   describe "create_event/3" do
     test "creates an event with the id, type and raw event" do
@@ -120,7 +121,7 @@ defmodule CiMetrics.GithubProjectTest do
 
       lead_time = GithubProject.calculate_lead_time(repository_id)
 
-      assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
+      assert lead_time == %TimeUnitMetric{
                days: 0,
                hours: 2,
                minutes: 0,
@@ -186,7 +187,7 @@ defmodule CiMetrics.GithubProjectTest do
 
       lead_time = GithubProject.calculate_lead_time(repository_id)
 
-      assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
+      assert lead_time == %TimeUnitMetric{
                days: 0,
                hours: 1,
                minutes: 30,
@@ -196,7 +197,7 @@ defmodule CiMetrics.GithubProjectTest do
     end
 
     test "returns 0 when there are no deployments" do
-      assert GithubProject.calculate_lead_time(666) == %CiMetrics.Metrics.TimeUnitMetric{
+      assert GithubProject.calculate_lead_time(666) == %TimeUnitMetric{
                days: 0,
                hours: 0,
                minutes: 0,
@@ -227,7 +228,7 @@ defmodule CiMetrics.GithubProjectTest do
 
       lead_time = GithubProject.calculate_lead_time(repository_id)
 
-      assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
+      assert lead_time == %TimeUnitMetric{
                days: 0,
                hours: 0,
                minutes: 0,
@@ -314,7 +315,7 @@ defmodule CiMetrics.GithubProjectTest do
 
       lead_time = GithubProject.calculate_lead_time(repository_id)
 
-      assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
+      assert lead_time == %TimeUnitMetric{
                days: 0,
                hours: 2,
                minutes: 0,
@@ -322,6 +323,29 @@ defmodule CiMetrics.GithubProjectTest do
                weeks: 0
              }
     end
+  end
+
+  test "daily_lead_time_snapshots/1" do
+    {:ok, repo} = Repository.insert_or_update(%{owner: "owner1", name: "repo1"})
+
+    %MetricSnapshot{}
+    |> MetricSnapshot.changeset(%{repository_id: repo.id, average_lead_time: 1})
+    |> Repo.insert()
+
+    %MetricSnapshot{}
+    |> MetricSnapshot.changeset(%{repository_id: repo.id, average_lead_time: 2})
+    |> Repo.insert()
+
+    %MetricSnapshot{}
+    |> MetricSnapshot.changeset(%{repository_id: repo.id, average_lead_time: 3})
+    |> Repo.insert()
+
+    lead_times =
+      repo.id
+      |> GithubProject.daily_lead_time_snapshots()
+      |> Enum.map(&Map.get(&1, :average_lead_time))
+
+    assert lead_times == [3, 2, 1]
   end
 
   test "get_events_for/1" do

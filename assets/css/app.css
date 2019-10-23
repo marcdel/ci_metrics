@@ -98,11 +98,3 @@ select {
   font-size: 14px;
   font-weight: 800;
 }
-
-table tr.review-link-row td {
-  border-bottom: none;
-}
-
-table tr.review-link-row td:last-of-type {
-  text-align: right;
-}

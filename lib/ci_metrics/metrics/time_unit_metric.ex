@@ -37,6 +37,10 @@ defmodule CiMetrics.Metrics.TimeUnitMetric do
     w * week + day * d + hour * h + minute * m + second * s
   end
 
+  def in_days(%TimeUnitMetric{weeks: weeks, days: days, hours: hours}) do
+    weeks * 7 + days + Float.round(hours / 24, 2)
+  end
+
   defp divisors() do
     minute = 60
     hour = minute * 60

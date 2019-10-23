@@ -6,4 +6,5 @@ defmodule CiMetrics.Project do
             }
   @callback get_events_for(struct()) :: [CiMetrics.Events.Event.type()]
   @callback calculate_lead_time(integer()) :: %CiMetrics.Metrics.TimeUnitMetric{}
+  @callback daily_lead_time_snapshots(integer()) :: [%CiMetrics.Metrics.TimeUnitMetric{}]
 end

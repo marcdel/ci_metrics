@@ -104,4 +104,68 @@ defmodule CiMetrics.Metrics.TimeUnitMetricTest do
 
     assert metric == 6_000_000
   end
+
+  describe "in_days/1" do
+    test "returns 0 if less than an hour" do
+      assert TimeUnitMetric.in_days(%TimeUnitMetric{
+               days: 0,
+               hours: 0,
+               minutes: 0,
+               seconds: 0,
+               weeks: 0
+             }) == 0
+
+      assert TimeUnitMetric.in_days(%TimeUnitMetric{
+               days: 0,
+               hours: 0,
+               minutes: 20,
+               seconds: 50,
+               weeks: 0
+             }) == 0
+    end
+
+    test "handles partial days" do
+      assert TimeUnitMetric.in_days(%TimeUnitMetric{
+               days: 0,
+               hours: 12,
+               minutes: 0,
+               seconds: 0,
+               weeks: 0
+             }) == 0.5
+
+      assert TimeUnitMetric.in_days(%TimeUnitMetric{
+               days: 1,
+               hours: 10,
+               minutes: 0,
+               seconds: 0,
+               weeks: 0
+             }) == 1.42
+
+      assert TimeUnitMetric.in_days(%TimeUnitMetric{
+               days: 2,
+               hours: 20,
+               minutes: 0,
+               seconds: 0,
+               weeks: 0
+             }) == 2.83
+    end
+
+    test "shows weeks in days" do
+      assert TimeUnitMetric.in_days(%TimeUnitMetric{
+               days: 0,
+               hours: 0,
+               minutes: 0,
+               seconds: 0,
+               weeks: 1
+             }) == 7
+
+      assert TimeUnitMetric.in_days(%TimeUnitMetric{
+               days: 1,
+               hours: 20,
+               minutes: 0,
+               seconds: 0,
+               weeks: 1
+             }) == 8.83
+    end
+  end
 end

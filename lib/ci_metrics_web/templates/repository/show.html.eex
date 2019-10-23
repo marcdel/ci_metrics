@@ -1,3 +1,24 @@
 <h1>Repository: <%= full_name(@repository) %></h1>
 
-<h3>Average Lead Time: <%= @repository.average_lead_time %></h3>
+<h3>Current Average Lead Time: <%= @repository.average_lead_time %></h3>
+
+<canvas id="metrics-graph"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script type="text/javascript">
+  const ctx = document.getElementById('metrics-graph').getContext('2d');
+  const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: <%= @repository.dates |> Jason.encode!() |> raw() %>,
+          datasets: [{
+              label: 'Lead Time',
+              backgroundColor: '#C34182',
+              borderColor: '#C34182',
+              fill: false,
+              data: <%= @repository.lead_times |> Jason.encode!() |> raw() %>
+          }]
+      },
+      options: {
+      }
+  });
+</script>
