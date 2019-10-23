@@ -325,27 +325,50 @@ defmodule CiMetrics.GithubProjectTest do
     end
   end
 
-  test "daily_lead_time_snapshots/1" do
-    {:ok, repo} = Repository.insert_or_update(%{owner: "owner1", name: "repo1"})
+  describe "daily_lead_time_snapshots/1" do
+    test "returns snapshots from oldest to newest" do
+      {:ok, repo} = Repository.insert_or_update(%{owner: "owner1", name: "repo1"})
 
-    %MetricSnapshot{}
-    |> MetricSnapshot.changeset(%{repository_id: repo.id, average_lead_time: 1})
-    |> Repo.insert()
+      %MetricSnapshot{}
+      |> MetricSnapshot.changeset(%{repository_id: repo.id, average_lead_time: 1})
+      |> Repo.insert()
 
-    %MetricSnapshot{}
-    |> MetricSnapshot.changeset(%{repository_id: repo.id, average_lead_time: 2})
-    |> Repo.insert()
+      %MetricSnapshot{}
+      |> MetricSnapshot.changeset(%{repository_id: repo.id, average_lead_time: 2})
+      |> Repo.insert()
 
-    %MetricSnapshot{}
-    |> MetricSnapshot.changeset(%{repository_id: repo.id, average_lead_time: 3})
-    |> Repo.insert()
+      %MetricSnapshot{}
+      |> MetricSnapshot.changeset(%{repository_id: repo.id, average_lead_time: 3})
+      |> Repo.insert()
 
-    lead_times =
-      repo.id
-      |> GithubProject.daily_lead_time_snapshots()
-      |> Enum.map(&Map.get(&1, :average_lead_time))
+      lead_times =
+        repo.id
+        |> GithubProject.daily_lead_time_snapshots()
+        |> Enum.map(&Map.get(&1, :average_lead_time))
 
-    assert lead_times == [3, 2, 1]
+      assert lead_times == [1, 2, 3]
+    end
+
+    test "returns snapshots for the last 30 days" do
+      {:ok, repo} = Repository.insert_or_update(%{owner: "owner1", name: "repo1"})
+
+      for index <- 1..32 do
+        %MetricSnapshot{}
+        |> MetricSnapshot.changeset(%{
+          repository_id: repo.id,
+          average_lead_time: index
+        })
+        |> Repo.insert()
+      end
+
+      lead_times =
+        repo.id
+        |> GithubProject.daily_lead_time_snapshots()
+        |> Enum.map(&Map.get(&1, :average_lead_time))
+
+      assert Enum.count(lead_times) == 30
+      assert lead_times == Enum.to_list(3..32)
+    end
   end
 
   test "get_events_for/1" do

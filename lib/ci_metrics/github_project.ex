@@ -17,7 +17,9 @@ defmodule CiMetrics.GithubProject do
     MetricSnapshot
     |> where(repository_id: ^repository_id)
     |> order_by(desc: :id)
+    |> limit(30)
     |> Repo.all()
+    |> Enum.reverse()
   end
 
   def create_repository(repository_path) do

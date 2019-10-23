@@ -14,7 +14,7 @@
               label: 'Lead Time',
               backgroundColor: '#C34182',
               borderColor: '#C34182',
-              fill: false,
+              fill: true,
               data: <%= @repository.lead_times |> Jason.encode!() |> raw() %>
           }]
       },
