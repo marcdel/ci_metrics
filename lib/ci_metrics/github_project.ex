@@ -6,7 +6,7 @@ defmodule CiMetrics.GithubProject do
 
   alias CiMetrics.{GithubClient, Repo}
   alias CiMetrics.Events.{Event, EventProcessor}
-  alias CiMetrics.Metrics.{LeadTime, MetricSnapshot, TimeUnitMetric}
+  alias CiMetrics.Metrics.{LeadTime, MetricSnapshot}
   alias CiMetrics.Project.Repository
 
   @impl CiMetrics.Project
@@ -14,12 +14,13 @@ defmodule CiMetrics.GithubProject do
 
   @impl CiMetrics.Project
   def daily_lead_time_snapshots(repository_id) do
+    {:ok, thirty_days_ago} = Date.utc_today() |> Date.add(-30) |> NaiveDateTime.new(~T[00:00:00])
+
     MetricSnapshot
     |> where(repository_id: ^repository_id)
-    |> order_by(desc: :id)
-    |> limit(30)
+    |> where([snapshot], snapshot.inserted_at >= ^thirty_days_ago)
+    |> order_by(asc: :id)
     |> Repo.all()
-    |> Enum.reverse()
   end
 
   def create_repository(repository_path) do

@@ -352,22 +352,50 @@ defmodule CiMetrics.GithubProjectTest do
     test "returns snapshots for the last 30 days" do
       {:ok, repo} = Repository.insert_or_update(%{owner: "owner1", name: "repo1"})
 
-      for index <- 1..32 do
-        %MetricSnapshot{}
-        |> MetricSnapshot.changeset(%{
-          repository_id: repo.id,
-          average_lead_time: index
-        })
-        |> Repo.insert()
-      end
+      {:ok, more_than_thirty_days_ago} =
+        Date.utc_today() |> Date.add(-31) |> NaiveDateTime.new(~T[00:00:00])
+
+      {:ok, thirty_days_ago} =
+        Date.utc_today() |> Date.add(-30) |> NaiveDateTime.new(~T[00:00:00])
+
+      {:ok, less_than_thirty_days_ago} =
+        Date.utc_today() |> Date.add(-29) |> NaiveDateTime.new(~T[00:00:00])
+
+      {:ok, today} = Date.utc_today() |> NaiveDateTime.new(~T[00:00:00])
+
+      Repo.insert_all(MetricSnapshot, [
+        [
+          average_lead_time: 1,
+          inserted_at: more_than_thirty_days_ago,
+          updated_at: more_than_thirty_days_ago,
+          repository_id: repo.id
+        ],
+        [
+          average_lead_time: 2,
+          inserted_at: thirty_days_ago,
+          updated_at: thirty_days_ago,
+          repository_id: repo.id
+        ],
+        [
+          average_lead_time: 3,
+          inserted_at: less_than_thirty_days_ago,
+          updated_at: less_than_thirty_days_ago,
+          repository_id: repo.id
+        ],
+        [
+          average_lead_time: 4,
+          inserted_at: today,
+          updated_at: today,
+          repository_id: repo.id
+        ]
+      ])
 
       lead_times =
         repo.id
         |> GithubProject.daily_lead_time_snapshots()
         |> Enum.map(&Map.get(&1, :average_lead_time))
 
-      assert Enum.count(lead_times) == 30
-      assert lead_times == Enum.to_list(3..32)
+      assert lead_times == [2, 3, 4]
     end
   end
 
