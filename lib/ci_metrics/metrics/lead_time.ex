@@ -2,7 +2,7 @@ defmodule CiMetrics.Metrics.LeadTime do
   import Ecto.Query
 
   alias CiMetrics.Repo
-  alias CiMetrics.Events.{Deployment, DeploymentStatus, Push}
+  alias CiMetrics.Events.{Deployment, Push}
   alias CiMetrics.Metrics.TimeUnitMetric
 
   def calculate(repository_id) when is_binary(repository_id) do
@@ -65,20 +65,7 @@ defmodule CiMetrics.Metrics.LeadTime do
   end
 
   defp deployments_by_sha(repository_id) do
-    deployments_query =
-      from deployment in Deployment,
-        join: status in DeploymentStatus,
-        on: deployment.deployment_id == status.deployment_id,
-        preload: [deployment_statuses: status],
-        where:
-          deployment.repository_id == ^repository_id and
-            status.status == "success",
-        order_by: [desc: status.status_at],
-        select: deployment
-
-    deployments =
-      deployments_query
-      |> Repo.all()
+    deployments = Deployment.get_successful_deployments_for(repository_id)
 
     Enum.reduce(deployments, %{}, fn deployment, map ->
       Map.put(map, deployment.sha, deployment)

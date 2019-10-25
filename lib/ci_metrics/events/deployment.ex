@@ -1,6 +1,7 @@
 defmodule CiMetrics.Events.Deployment do
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
   alias CiMetrics.Repo
   alias CiMetrics.Events.{Event, Deployment, DeploymentStatus}
   alias CiMetrics.Project.Repository
@@ -21,6 +22,21 @@ defmodule CiMetrics.Events.Deployment do
 
   def get_all do
     Repo.all(Deployment)
+  end
+
+  def get_successful_deployments_for(repository_id) do
+    deployments_query =
+      from deployment in Deployment,
+        join: status in DeploymentStatus,
+        on: deployment.deployment_id == status.deployment_id,
+        preload: [deployment_statuses: status],
+        where:
+          deployment.repository_id == ^repository_id and
+            status.status == "success",
+        order_by: [desc: status.status_at],
+        select: deployment
+
+    Repo.all(deployments_query)
   end
 
   def insert_or_update(params) do
