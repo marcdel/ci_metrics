@@ -2,7 +2,7 @@ defmodule CiMetrics.Metrics.MetricSnapshot do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias CiMetrics.Repo
+  alias CiMetrics.Project.Repository
 
   schema "metric_snapshots" do
     field :average_lead_time, :integer
