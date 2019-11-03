@@ -47,7 +47,7 @@ config :ci_metrics, github_secret: github_secret
 # If you are doing OTP releases, you need to instruct Phoenix
 # to start each relevant endpoint:
 #
-#     config :ci_metrics, CiMetricsWeb.Endpoint, server: true
+config :ci_metrics, CiMetricsWeb.Endpoint, server: true
 #
 # Then you can assemble a release by calling `mix release`.
 # See `mix help release` for more information.
