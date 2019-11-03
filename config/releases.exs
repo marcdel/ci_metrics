@@ -1,3 +1,5 @@
+import Config
+
 config :ci_metrics, CiMetricsWeb.Endpoint,
   server: true,
   http: [port: {:system, "PORT"}],
