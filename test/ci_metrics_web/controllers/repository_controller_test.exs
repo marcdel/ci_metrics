@@ -43,6 +43,6 @@ defmodule CiMetricsWeb.RepositoryControllerTest do
     assert response(conn, 200) =~ "Repository: marcdel/sick_bro"
     assert response(conn, 200) =~ "Current Average Lead Time: 2 hours, 30 minutes"
     assert response(conn, 200) =~ "[\"10/21/2019\",\"10/22/2019\"]"
-    assert response(conn, 200) =~ "[\"69.42\",\"1.0\"]"
+    assert response(conn, 200) =~ "[\"1666.67\",\"24.0\"]"
   end
 end

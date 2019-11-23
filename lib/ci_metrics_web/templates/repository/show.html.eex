@@ -19,6 +19,22 @@
           }]
       },
       options: {
+        scales: {
+          xAxes: [{
+            display: true,
+            scaleLabel: {
+              display: true,
+              labelString: 'Day'
+            }
+          }],
+          yAxes: [{
+            display: true,
+            scaleLabel: {
+              display: true,
+              labelString: 'Hours'
+            }
+          }]
+        }
       }
   });
 </script>

@@ -17,7 +17,7 @@ defmodule CiMetricsWeb.RepositoryController do
     lead_times_in_days =
       lead_time_snapshots
       |> Enum.map(&TimeUnitMetric.new(&1.average_lead_time))
-      |> Enum.map(&TimeUnitMetric.in_days(&1))
+      |> Enum.map(&TimeUnitMetric.in_hours(&1))
       |> Enum.map(&Float.to_string(&1))
 
     lead_time_dates =
