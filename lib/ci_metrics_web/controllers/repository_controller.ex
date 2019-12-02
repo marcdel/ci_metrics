@@ -6,6 +6,26 @@ defmodule CiMetricsWeb.RepositoryController do
 
   @project Application.get_env(:ci_metrics, :project, GithubProject)
 
+  def new(conn, _params) do
+    render(conn, "new.html")
+  end
+
+  def create(conn, %{"repository_name" => repository_name, "access_token" => access_token}) do
+    with {:ok, repository} <- GithubProject.create_repository(repository_name),
+         {:ok, :webhook_created} <- GithubProject.create_webhook(repository, access_token) do
+      conn
+      |> put_flash(:info, "Repository set up successfully.")
+      |> render("new.html")
+    else
+      {:error, error} ->
+        error_message = error_to_user_message(error)
+
+        conn
+        |> put_flash(:error, error_message)
+        |> render("new.html")
+    end
+  end
+
   def show(conn, params) do
     lead_time =
       params["id"]
@@ -36,4 +56,18 @@ defmodule CiMetricsWeb.RepositoryController do
 
     render(conn, "show.html", repository: repo)
   end
+
+  defp error_to_user_message(:webhook_exists),
+    do: "Oops! This repository already has a webhook from us."
+
+  defp error_to_user_message(:repository_not_found), do: "Oops! We couldn't find that repository."
+
+  defp error_to_user_message(:invalid_credentials),
+    do: "Oops! The access token you provided doesn't seem to be working."
+
+  defp error_to_user_message(:webhook_error),
+    do: "Oops! We had some trouble creating a webhook for your repository. Please try again."
+
+  defp error_to_user_message(_),
+    do: "Oops! We had some trouble setting up your repository. Please try again."
 end

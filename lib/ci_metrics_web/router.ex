@@ -17,9 +17,8 @@ defmodule CiMetricsWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    resources "/webhooks", WebhookController, only: [:new, :create]
     resources "/events", EventController, only: [:index, :show]
-    resources "/repositories", RepositoryController, only: [:show]
+    resources "/repositories", RepositoryController, only: [:new, :create, :show]
   end
 
   scope "/api", CiMetricsWeb do

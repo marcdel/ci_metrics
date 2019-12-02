@@ -4,6 +4,6 @@
     Praesent ac neque nibh. Fusce hendrerit vel urna id ornare. Quisque ultricies enim in lacus porta fringilla. Curabitur lorem magna, dapibus non ultrices id, posuere finibus quam. Donec sed felis eget arcu euismod euismod eu ac tortor.
   </p>
   <p>
-    <%= link "Get Started", to: Routes.webhook_path(@conn, :new), class: "button button-outline" %>
+    <%= link "Get Started", to: Routes.repository_path(@conn, :new), class: "button button-outline" %>
   </p>
 </section>
