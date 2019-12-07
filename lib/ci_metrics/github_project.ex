@@ -28,9 +28,19 @@ defmodule CiMetrics.GithubProject do
     Repository.insert_or_update(%{owner: owner, name: name})
   end
 
-  def create_webhook(repository, access_token) do
+  def create_repository(repository_path, deployment_strategy) do
+    [owner, name] = String.split(repository_path, "/")
+
+    Repository.insert_or_update(%{
+      owner: owner,
+      name: name,
+      deployment_strategy: deployment_strategy
+    })
+  end
+
+  def create_webhook(repository_name, access_token) do
     GithubClient.create_webhook(%{
-      repository_name: Repository.full_name(repository),
+      repository_name: repository_name,
       access_token: access_token,
       callback_url: Application.get_env(:ci_metrics, :webhook_callback_url),
       events: ["*"]

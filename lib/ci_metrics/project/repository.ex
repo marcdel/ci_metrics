@@ -9,6 +9,7 @@ defmodule CiMetrics.Project.Repository do
   schema "repositories" do
     field :name, :string
     field :owner, :string
+    field :deployment_strategy, :string
     has_many :events, CiMetrics.Events.Event
     has_many :commits, CiMetrics.Project.Commit
     has_many :deployments, CiMetrics.Events.Deployment
@@ -57,7 +58,7 @@ defmodule CiMetrics.Project.Repository do
 
   def changeset(repository, attrs) do
     repository
-    |> cast(attrs, [:name, :owner])
+    |> cast(attrs, [:name, :owner, :deployment_strategy])
     |> validate_required([:name, :owner])
     |> unique_constraint(:name, name: :repositories_name_owner_index)
   end

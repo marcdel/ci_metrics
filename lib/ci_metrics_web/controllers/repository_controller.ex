@@ -1,4 +1,5 @@
 defmodule CiMetricsWeb.RepositoryController do
+  require Logger
   use CiMetricsWeb, :controller
   alias CiMetrics.GithubProject
   alias CiMetrics.Metrics.TimeUnitMetric
@@ -10,14 +11,20 @@ defmodule CiMetricsWeb.RepositoryController do
     render(conn, "new.html")
   end
 
-  def create(conn, %{"repository_name" => repository_name, "access_token" => access_token}) do
-    with {:ok, repository} <- GithubProject.create_repository(repository_name),
-         {:ok, :webhook_created} <- GithubProject.create_webhook(repository, access_token) do
+  def create(conn, %{
+        "repository_name" => repository_name,
+        "access_token" => access_token,
+        "deployment_strategy" => deployment_strategy
+      }) do
+    with {:ok, :webhook_created} <- GithubProject.create_webhook(repository_name, access_token),
+         {:ok, _repository} <-
+           GithubProject.create_repository(repository_name, deployment_strategy) do
       conn
       |> put_flash(:info, "Repository set up successfully.")
       |> render("new.html")
     else
       {:error, error} ->
+        Logger.error(inspect(error))
         error_message = error_to_user_message(error)
 
         conn

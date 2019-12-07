@@ -10,6 +10,10 @@
       Personal access token <%= password_input f, :access_token %>
     </label>
 
+    <label>
+      Deployment Strategy <%= select f, :deployment_strategy, deployment_strategies() %>
+    </label>
+
     <%= submit "Create", class: "button button-outline" %>
   </fieldset>
 <% end %>

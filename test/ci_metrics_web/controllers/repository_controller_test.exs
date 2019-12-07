@@ -14,6 +14,7 @@ defmodule CiMetricsWeb.RepositoryControllerTest do
 
     assert html =~ "Repository"
     assert html =~ "Personal access token"
+    assert html =~ "Deployment Strategy"
     assert html =~ Routes.repository_path(conn, :create)
   end
 
@@ -24,7 +25,8 @@ defmodule CiMetricsWeb.RepositoryControllerTest do
       conn =
         post(conn, Routes.repository_path(conn, :create), %{
           "repository_name" => "marcdel/ci_metrics",
-          "access_token" => "1234509876"
+          "access_token" => "1234509876",
+          "deployment_strategy" => "heroku"
         })
 
       assert get_flash(conn, :info) == "Repository set up successfully."
@@ -32,6 +34,7 @@ defmodule CiMetricsWeb.RepositoryControllerTest do
       [repository] = Repository.get_all()
       assert repository.name == "ci_metrics"
       assert repository.owner == "marcdel"
+      assert repository.deployment_strategy == "heroku"
     end
 
     test "creates a webhook in the github repository", %{conn: conn} do
@@ -44,12 +47,17 @@ defmodule CiMetricsWeb.RepositoryControllerTest do
 
       post(conn, Routes.repository_path(conn, :create), %{
         "repository_name" => "marcdel/ci_metrics",
-        "access_token" => "1234509876"
+        "access_token" => "1234509876",
+        "deployment_strategy" => "heroku"
       })
     end
 
     test "returns the correct message for different kinds of errors", %{conn: conn} do
-      request = %{"repository_name" => "marcdel/ci_metrics", "access_token" => "1234509876"}
+      request = %{
+        "repository_name" => "marcdel/ci_metrics",
+        "access_token" => "1234509876",
+        "deployment_strategy" => "heroku"
+      }
 
       expect(MockHTTPClient, :post, fn _, _, _, [] ->
         {:error, %Mojito.Response{status_code: 422}}
