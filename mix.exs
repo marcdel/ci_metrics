@@ -43,7 +43,7 @@ defmodule CiMetrics.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
       {:mox, "~> 0.5", only: :test},
       {:mojito, "~> 0.5.0"},
       {:sched_ex, "~> 1.1"}
