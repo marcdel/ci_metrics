@@ -11,7 +11,7 @@
     </label>
 
     <label>
-      Deployment Strategy <%= select f, :deployment_strategy, deployment_strategies() %>
+      Deployment Strategy <%= select f, :deployment_strategy, deployment_strategies(), prompt: "Please select one" %>
     </label>
 
     <%= submit "Create", class: "button button-outline" %>
