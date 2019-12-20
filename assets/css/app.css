@@ -10,8 +10,6 @@ html {
   --link-color: #C34182;
   --logo-color: #512E67;
   --bg-color: #FAFAFA;
-  --pill-color: #512E67;
-  --pill-text-color: #FFFFFF;
 }
 
 body {
@@ -88,13 +86,4 @@ a:focus, a:hover {
 
 select {
   width: 100%;
-}
-
-.pill {
-  color: var(--pill-text-color);
-  background-color: var(--pill-color);
-  border-radius: 15px;
-  padding: 0.5rem 1.1rem;
-  font-size: 14px;
-  font-weight: 800;
 }
