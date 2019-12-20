@@ -9,7 +9,7 @@ defmodule CiMetrics.Project.Repository do
   schema "repositories" do
     field :name, :string
     field :owner, :string
-    field :deployment_strategy, :string
+    field :deployment_strategy, CiMetrics.AtomType
     has_many :events, CiMetrics.Events.Event
     has_many :commits, CiMetrics.Project.Commit
     has_many :deployments, CiMetrics.Events.Deployment

@@ -26,7 +26,7 @@ defmodule CiMetricsWeb.RepositoryControllerTest do
         post(conn, Routes.repository_path(conn, :create), %{
           "repository_name" => "marcdel/ci_metrics",
           "access_token" => "1234509876",
-          "deployment_strategy" => "heroku"
+          "deployment_strategy" => :heroku
         })
 
       assert get_flash(conn, :info) == "Repository set up successfully."
@@ -34,7 +34,7 @@ defmodule CiMetricsWeb.RepositoryControllerTest do
       [repository] = Repository.get_all()
       assert repository.name == "ci_metrics"
       assert repository.owner == "marcdel"
-      assert repository.deployment_strategy == "heroku"
+      assert repository.deployment_strategy == :heroku
     end
 
     test "creates a webhook in the github repository", %{conn: conn} do
@@ -48,7 +48,7 @@ defmodule CiMetricsWeb.RepositoryControllerTest do
       post(conn, Routes.repository_path(conn, :create), %{
         "repository_name" => "marcdel/ci_metrics",
         "access_token" => "1234509876",
-        "deployment_strategy" => "heroku"
+        "deployment_strategy" => :heroku
       })
     end
 
@@ -56,7 +56,7 @@ defmodule CiMetricsWeb.RepositoryControllerTest do
       request = %{
         "repository_name" => "marcdel/ci_metrics",
         "access_token" => "1234509876",
-        "deployment_strategy" => "heroku"
+        "deployment_strategy" => :heroku
       }
 
       expect(MockHTTPClient, :post, fn _, _, _, [] ->
