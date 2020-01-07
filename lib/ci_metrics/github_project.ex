@@ -10,7 +10,7 @@ defmodule CiMetrics.GithubProject do
   alias CiMetrics.Project.Repository
 
   @impl CiMetrics.Project
-  def calculate_lead_time(repository_id), do: LeadTime.calculate(repository_id)
+  def calculate_lead_time(repository_id), do: LeadTime.all_time_average(repository_id)
 
   @impl CiMetrics.Project
   def daily_lead_time_snapshots(repository_id) do

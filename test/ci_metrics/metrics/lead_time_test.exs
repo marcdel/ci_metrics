@@ -4,7 +4,7 @@ defmodule CiMetrics.Metrics.LeadTimeTest do
   alias CiMetrics.Metrics.{LeadTime, TimeUnitMetric}
   alias CiMetrics.Project.Repository
 
-  describe "calculate/1" do
+  describe "all_time_average/1" do
     test "lead time is the time from commit to successful deployment" do
       CreateEvent.create_and_process("push", %{
         "before" => "",
@@ -42,7 +42,7 @@ defmodule CiMetrics.Metrics.LeadTimeTest do
 
       [%{id: repository_id}] = Repository.get_all()
 
-      lead_time = LeadTime.calculate(repository_id)
+      lead_time = LeadTime.all_time_average(repository_id)
 
       assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
                days: 0,
@@ -108,7 +108,7 @@ defmodule CiMetrics.Metrics.LeadTimeTest do
 
       [%{id: repository_id}] = Repository.get_all()
 
-      lead_time = LeadTime.calculate(repository_id)
+      lead_time = LeadTime.all_time_average(repository_id)
 
       assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
                days: 0,
@@ -120,7 +120,7 @@ defmodule CiMetrics.Metrics.LeadTimeTest do
     end
 
     test "returns 0 when there are no deployments" do
-      assert LeadTime.calculate(666) == %CiMetrics.Metrics.TimeUnitMetric{
+      assert LeadTime.all_time_average(666) == %CiMetrics.Metrics.TimeUnitMetric{
                days: 0,
                hours: 0,
                minutes: 0,
@@ -149,7 +149,7 @@ defmodule CiMetrics.Metrics.LeadTimeTest do
 
       [%{id: repository_id}] = Repository.get_all()
 
-      lead_time = LeadTime.calculate(repository_id)
+      lead_time = LeadTime.all_time_average(repository_id)
 
       assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
                days: 0,
@@ -188,7 +188,7 @@ defmodule CiMetrics.Metrics.LeadTimeTest do
 
       [%{id: repository_id}] = Repository.get_all()
 
-      lead_time = LeadTime.calculate(repository_id)
+      lead_time = LeadTime.all_time_average(repository_id)
 
       assert lead_time == %TimeUnitMetric{
                days: 0,
@@ -236,7 +236,7 @@ defmodule CiMetrics.Metrics.LeadTimeTest do
 
       [%{id: repository_id}] = Repository.get_all()
 
-      lead_time = LeadTime.calculate(repository_id)
+      lead_time = LeadTime.all_time_average(repository_id)
 
       assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
                days: 0,

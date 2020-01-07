@@ -5,15 +5,15 @@ defmodule CiMetrics.Metrics.LeadTime do
   alias CiMetrics.Events.{Deployment, Push}
   alias CiMetrics.Metrics.TimeUnitMetric
 
-  def calculate(repository_id) when is_binary(repository_id) do
+  def all_time_average(repository_id) when is_binary(repository_id) do
     repository_id
     |> Integer.parse()
     |> Tuple.to_list()
     |> List.first()
-    |> calculate()
+    |> all_time_average()
   end
 
-  def calculate(repository_id) when is_integer(repository_id) do
+  def all_time_average(repository_id) when is_integer(repository_id) do
     pushes_by_deployment = pushes_by_deployment(repository_id)
     deployments_by_sha = deployments_by_sha(repository_id)
 
