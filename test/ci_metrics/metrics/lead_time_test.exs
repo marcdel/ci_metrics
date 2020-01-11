@@ -4,6 +4,151 @@ defmodule CiMetrics.Metrics.LeadTimeTest do
   alias CiMetrics.Metrics.{LeadTime, TimeUnitMetric}
   alias CiMetrics.Project.Repository
 
+  def n_days_ago(n) do
+    Date.utc_today()
+    |> Date.add(-n)
+    |> DateConversion.to_date_time()
+    |> DateTime.to_iso8601()
+  end
+
+  describe "last_30_days/1" do
+    test "calculates the average lead time for deployments in the last 30 days" do
+      CreateEvent.create_and_process("push", %{
+        "before" => "",
+        "after" => "2",
+        "commits" => [
+          %{"id" => "1", "timestamp" => n_days_ago(31)},
+          %{"id" => "2", "timestamp" => n_days_ago(31)}
+        ]
+      })
+
+      CreateEvent.create_and_process("deployment", %{
+        "deployment" => %{
+          "id" => 1,
+          "sha" => "2",
+          "created_at" => n_days_ago(31)
+        }
+      })
+
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{
+          "id" => 1,
+          "state" => "success",
+          "created_at" => n_days_ago(31)
+        },
+        "deployment" => %{"id" => 1, "sha" => "2"}
+      })
+
+      CreateEvent.create_and_process("push", %{
+        "before" => "",
+        "after" => "4",
+        "commits" => [
+          %{"id" => "3", "timestamp" => n_days_ago(30)},
+          %{"id" => "4", "timestamp" => n_days_ago(30)}
+        ]
+      })
+
+      CreateEvent.create_and_process("deployment", %{
+        "deployment" => %{
+          "id" => 2,
+          "sha" => "4",
+          "created_at" => n_days_ago(30)
+        }
+      })
+
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{
+          "id" => 2,
+          "state" => "success",
+          "created_at" => n_days_ago(30)
+        },
+        "deployment" => %{"id" => 2, "sha" => "4"}
+      })
+
+      CreateEvent.create_and_process("push", %{
+        "before" => "",
+        "after" => "6",
+        "commits" => [
+          %{"id" => "5", "timestamp" => n_days_ago(29)},
+          %{"id" => "6", "timestamp" => n_days_ago(29)}
+        ]
+      })
+
+      CreateEvent.create_and_process("deployment", %{
+        "deployment" => %{
+          "id" => 4,
+          "sha" => "6",
+          "created_at" => n_days_ago(27)
+        }
+      })
+
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{
+          "id" => 4,
+          "state" => "success",
+          "created_at" => n_days_ago(27)
+        },
+        "deployment" => %{"id" => 4, "sha" => "6"}
+      })
+
+      [%{id: repository_id}] = Repository.get_all()
+
+      lead_time = LeadTime.last_30_days(repository_id)
+
+      assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
+               days: 1,
+               hours: 0,
+               minutes: 0,
+               seconds: 0,
+               weeks: 0
+             }
+    end
+
+    test "does not include commits older than 30 days even if they're included in deploy less than 30 days ago" do
+      twenty_nine_days_ago = n_days_ago(29)
+
+      CreateEvent.create_and_process("push", %{
+        "before" => "",
+        "after" => "4",
+        "commits" => [
+          %{"id" => "1", "timestamp" => n_days_ago(35)},
+          %{"id" => "2", "timestamp" => n_days_ago(31)},
+          %{"id" => "3", "timestamp" => n_days_ago(30)},
+          %{"id" => "4", "timestamp" => twenty_nine_days_ago}
+        ]
+      })
+
+      CreateEvent.create_and_process("deployment", %{
+        "deployment" => %{
+          "id" => 1,
+          "sha" => "4",
+          "created_at" => twenty_nine_days_ago
+        }
+      })
+
+      CreateEvent.create_and_process("deployment_status", %{
+        "deployment_status" => %{
+          "id" => 1,
+          "state" => "success",
+          "created_at" => twenty_nine_days_ago
+        },
+        "deployment" => %{"id" => 1, "sha" => "4"}
+      })
+
+      [%{id: repository_id}] = Repository.get_all()
+
+      lead_time = LeadTime.last_30_days(repository_id)
+
+      assert lead_time == %CiMetrics.Metrics.TimeUnitMetric{
+               days: 0,
+               hours: 12,
+               minutes: 0,
+               seconds: 0,
+               weeks: 0
+             }
+    end
+  end
+
   describe "all_time_average/1" do
     test "lead time is the time from commit to successful deployment" do
       CreateEvent.create_and_process("push", %{

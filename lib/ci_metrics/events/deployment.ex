@@ -39,6 +39,26 @@ defmodule CiMetrics.Events.Deployment do
     Repo.all(deployments_query)
   end
 
+  def get_successful_deployments_for(repository_id, date_range) do
+    first = DateConversion.to_date_time(date_range.first)
+    last = DateConversion.to_date_time(date_range.last)
+
+    deployments_query =
+      from deployment in Deployment,
+        join: status in DeploymentStatus,
+        on: deployment.deployment_id == status.deployment_id,
+        preload: [deployment_statuses: status],
+        where:
+          deployment.repository_id == ^repository_id and
+            status.status == "success" and
+            status.status_at >= ^first and
+            status.status_at <= ^last,
+        order_by: [desc: status.status_at],
+        select: deployment
+
+    Repo.all(deployments_query)
+  end
+
   def insert_or_update(params) do
     case Repo.get_by(Deployment, params) do
       nil -> %Deployment{}
